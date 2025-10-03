@@ -3,184 +3,600 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 
-export default function DashboardPage() {
+export default function MissionControlDashboard() {
   const [currentTime, setCurrentTime] = useState(new Date())
+  const [selectedEvent, setSelectedEvent] = useState(0)
+  const [aiCopilotOpen, setAiCopilotOpen] = useState(false)
+  const [dataFlow, setDataFlow] = useState(0)
+
+  // EventOS-specific event data with real event management context
+  const events = [
+    {
+      id: 1,
+      name: "Tech Summit 2024",
+      type: "Conference",
+      venue: "San Francisco Convention Center",
+      date: "March 15-17, 2024",
+      status: "live",
+      attendees: { registered: 1247, checkedIn: 892, vip: 45 },
+      vendors: { total: 12, active: 8, pending: 4 },
+      sponsors: { total: 5, platinum: 1, gold: 2, silver: 2 },
+      sessions: { total: 24, live: 3, upcoming: 8 },
+      progress: 65,
+      urgentTasks: 3,
+      notifications: 7,
+      theme: "from-blue-600 to-indigo-700"
+    },
+    {
+      id: 2,
+      name: "Startup Pitch Night",
+      type: "Networking",
+      venue: "Innovation Hub Downtown",
+      date: "March 20, 2024",
+      status: "upcoming",
+      attendees: { registered: 456, checkedIn: 0, vip: 12 },
+      vendors: { total: 8, active: 6, pending: 2 },
+      sponsors: { total: 3, platinum: 0, gold: 1, silver: 2 },
+      sessions: { total: 12, live: 0, upcoming: 12 },
+      progress: 85,
+      urgentTasks: 1,
+      notifications: 3,
+      theme: "from-emerald-600 to-teal-700"
+    },
+    {
+      id: 3,
+      name: "AI Innovation Workshop",
+      type: "Workshop",
+      venue: "Tech Campus Building A",
+      date: "April 2-4, 2024",
+      status: "planning",
+      attendees: { registered: 234, checkedIn: 0, vip: 8 },
+      vendors: { total: 15, active: 5, pending: 10 },
+      sponsors: { total: 7, platinum: 2, gold: 3, silver: 2 },
+      sessions: { total: 18, live: 0, upcoming: 18 },
+      progress: 40,
+      urgentTasks: 8,
+      notifications: 12,
+      theme: "from-purple-600 to-violet-700"
+    }
+  ]
+
+  const currentEvent = events[selectedEvent]
 
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 1000)
     return () => clearInterval(timer)
   }, [])
 
+  useEffect(() => {
+    const dataFlowTimer = setInterval(() => {
+      setDataFlow(prev => (prev + 1) % 360)
+    }, 100)
+    return () => clearInterval(dataFlowTimer)
+  }, [])
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 overflow-hidden relative">
-      {/* Cosmic Background Effects */}
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-emerald-50 relative overflow-hidden">
+      {/* Subtle Background Pattern */}
       <div className="absolute inset-0 opacity-30">
-        <div className="absolute top-10 left-10 w-2 h-2 bg-white rounded-full animate-pulse"></div>
-        <div className="absolute top-20 right-20 w-1 h-1 bg-blue-300 rounded-full animate-ping"></div>
-        <div className="absolute bottom-20 left-20 w-3 h-3 bg-purple-300 rounded-full animate-pulse delay-1000"></div>
-        <div className="absolute bottom-32 right-32 w-1 h-1 bg-white rounded-full animate-ping delay-500"></div>
-        <div className="absolute top-1/2 left-1/4 w-2 h-2 bg-cyan-300 rounded-full animate-pulse delay-700"></div>
+        <div className="absolute inset-0" style={{
+          backgroundImage: `
+            radial-gradient(circle at 25% 25%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+            radial-gradient(circle at 75% 75%, rgba(16, 185, 129, 0.1) 0%, transparent 50%)
+          `
+        }}></div>
       </div>
 
-      {/* Floating Navigation Header */}
-      <nav className="absolute top-6 left-6 right-6 z-50">
-        <div className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl px-6 py-4">
+      {/* EventOS Mission Control Header */}
+      <nav className="absolute top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-lg border-b border-blue-100 shadow-lg shadow-blue-500/10">
+        <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex justify-between items-center">
-            <div className="flex items-center space-x-4">
-              <Link href="/" className="text-2xl font-bold bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">
-                🚀 EventOS
+            <div className="flex items-center space-x-6">
+              <Link href="/" className="flex items-center space-x-3">
+                <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-blue-700 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/25">
+                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                  </svg>
+                </div>
+                <div>
+                  <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">EventOS</span>
+                  <div className="text-xs text-blue-600 font-medium -mt-1">AI Event Platform</div>
+                </div>
               </Link>
-              <div className="hidden md:block text-white/70 text-sm">
-                Mission Control
+              <div className="hidden md:flex items-center space-x-2 bg-blue-50 px-3 py-1 rounded-lg">
+                <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
+                <span className="text-blue-700 text-sm font-medium">Mission Control</span>
               </div>
             </div>
             
             <div className="flex items-center space-x-6">
-              {/* Quick Stats */}
-              <div className="hidden lg:flex items-center space-x-4 text-white/80 text-sm">
-                <div className="flex items-center space-x-1">
-                  <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                  <span>3 Active Events</span>
+              {/* Live Event Stats */}
+              <div className="hidden lg:flex items-center space-x-4 bg-white/60 backdrop-blur-sm border border-gray-200/50 rounded-xl px-4 py-2">
+                <div className="flex items-center space-x-2">
+                  <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
+                  <span className="text-emerald-700 text-sm font-semibold">{events.filter(e => e.status === 'live').length} Live</span>
                 </div>
-                <div className="text-white/50">|</div>
-                <div>{currentTime.toLocaleTimeString()}</div>
+                <div className="text-gray-300">|</div>
+                <div className="flex items-center space-x-2">
+                  <div className="w-2 h-2 bg-amber-500 rounded-full animate-pulse"></div>
+                  <span className="text-amber-700 text-sm font-semibold">{currentEvent.urgentTasks} Urgent</span>
+                </div>
+                <div className="text-gray-300">|</div>
+                <div className="text-blue-600 font-mono text-xs font-medium">{currentTime.toLocaleTimeString()}</div>
               </div>
               
-              {/* Search */}
-              <div className="hidden md:block">
-                <div className="relative">
-                  <input
-                    type="text"
-                    placeholder="Search universe..."
-                    className="bg-white/10 border border-white/20 rounded-xl px-4 py-2 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-cyan-400 w-48"
-                  />
-                  <div className="absolute right-3 top-2.5 text-white/50">🔍</div>
-                </div>
+              {/* Replace 10+ Tools Badge */}
+              <div className="hidden md:flex items-center space-x-2 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white px-4 py-2 rounded-xl shadow-lg shadow-emerald-500/25">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span className="text-sm font-bold">Replaces 10+ Tools</span>
               </div>
+              
+              {/* AI Copilot Toggle */}
+              <button 
+                onClick={() => setAiCopilotOpen(!aiCopilotOpen)}
+                className={`flex items-center space-x-3 px-4 py-2 rounded-xl transition-all duration-200 shadow-lg ${
+                  aiCopilotOpen 
+                    ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-blue-500/25' 
+                    : 'bg-white/80 text-blue-700 hover:bg-blue-50 border border-blue-200 shadow-blue-500/10'
+                }`}
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                </svg>
+                <div className="hidden md:block">
+                  <div className="text-sm font-bold">AI Copilot</div>
+                  <div className="text-xs opacity-90">Planning Assistant</div>
+                </div>
+                {currentEvent.notifications > 0 && (
+                  <div className="w-3 h-3 bg-red-500 rounded-full animate-ping flex items-center justify-center">
+                    <div className="text-xs text-white font-bold">{currentEvent.notifications}</div>
+                  </div>
+                )}
+              </button>
               
               {/* Profile */}
-              <div className="relative">
-                <button className="flex items-center space-x-2 bg-gradient-to-r from-cyan-500 to-purple-500 rounded-xl px-4 py-2 text-white hover:from-cyan-600 hover:to-purple-600 transition-all duration-300">
-                  <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
-                    <span className="text-sm font-bold">👤</span>
+              <button className="flex items-center space-x-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 rounded-xl px-4 py-2 text-white transition-all duration-200 shadow-lg shadow-blue-500/25">
+                <div className="w-9 h-9 bg-white/20 rounded-lg flex items-center justify-center">
+                  <span className="text-sm font-bold">EC</span>
+            </div>
+                <div className="hidden md:block text-left">
+                  <div className="text-sm font-bold">Event Commander</div>
+                  <div className="text-xs opacity-90">Premium Account</div>
                   </div>
-                  <span className="hidden md:block">Commander</span>
                 </button>
-              </div>
             </div>
           </div>
         </div>
       </nav>
 
-      {/* Main Dashboard Universe Container */}
-      <div className="pt-24 pb-8 px-6 h-screen flex flex-col">
-        {/* Welcome Section */}
-        <div className="text-center mb-8">
-          <h1 className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 bg-clip-text text-transparent mb-4">
-            Event Universe
-          </h1>
-          <p className="text-white/70 text-lg max-w-2xl mx-auto">
-            Welcome to your cosmic event command center. Navigate through your event galaxy with infinite possibilities.
-          </p>
+      {/* Main Mission Control Interface */}
+      <div className="pt-20 h-screen flex">
+        
+        {/* Enhanced AI Copilot Sidebar */}
+        {aiCopilotOpen && (
+          <div className="w-96 bg-white/95 backdrop-blur-lg border-r border-blue-200 shadow-xl shadow-blue-500/10 overflow-y-auto">
+            {/* AI Copilot Header */}
+            <div className="p-6 border-b border-blue-100 bg-gradient-to-r from-blue-50 to-emerald-50">
+              <div className="flex items-center space-x-3 mb-3">
+                <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-blue-700 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/25">
+                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                  </svg>
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold text-blue-800">AI Event Copilot</h3>
+                  <p className="text-sm text-blue-600">Replacing your entire event planning team</p>
+                </div>
+              </div>
+              <div className="bg-blue-100 rounded-lg p-3">
+                <p className="text-xs text-blue-700 font-medium">
+                  💡 I've analyzed 1,247+ similar events to optimize your {currentEvent.name}
+                </p>
+        </div>
         </div>
 
-        {/* Central Universe Container */}
-        <div className="flex-1 relative">
-          {/* This will be the main orbital dashboard container */}
-          <div className="absolute inset-0 flex items-center justify-center">
+            {/* AI Suggestions */}
+            <div className="p-6 space-y-4">
+              {/* Urgent Task Alert */}
+              <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 shadow-sm">
+                <div className="flex items-start space-x-3">
+                  <div className="w-8 h-8 bg-gradient-to-r from-amber-500 to-amber-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                    </svg>
+                        </div>
+                  <div className="flex-1">
+                    <h4 className="font-semibold text-amber-800 mb-1">Urgent: Task Prioritization</h4>
+                    <p className="text-sm text-amber-700 mb-3">
+                      {currentEvent.name} has {currentEvent.urgentTasks} critical tasks requiring immediate attention. Based on similar events, I recommend addressing catering logistics first.
+                    </p>
+                    <div className="flex space-x-2">
+                      <button className="text-xs bg-gradient-to-r from-amber-600 to-amber-700 text-white px-3 py-2 rounded-lg hover:from-amber-700 hover:to-amber-800 font-medium shadow-sm">
+                        Auto-prioritize tasks
+                      </button>
+                      <button className="text-xs bg-white text-amber-700 border border-amber-300 px-3 py-2 rounded-lg hover:bg-amber-50 font-medium">
+                        Show task details
+                      </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+              {/* Success Insight */}
+              <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-4 shadow-sm">
+                <div className="flex items-start space-x-3">
+                  <div className="w-8 h-8 bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                    </svg>
+                  </div>
+                  <div className="flex-1">
+                    <h4 className="font-semibold text-emerald-800 mb-1">Opportunity Detected</h4>
+                    <p className="text-sm text-emerald-700 mb-3">
+                      Registration is 18% above target! Similar events saw 25% revenue increase by opening premium networking sessions.
+                    </p>
+                    <button className="text-xs bg-gradient-to-r from-emerald-600 to-emerald-700 text-white px-3 py-2 rounded-lg hover:from-emerald-700 hover:to-emerald-800 font-medium shadow-sm">
+                      Create premium add-ons
+                    </button>
+                  </div>
+                        </div>
+                      </div>
+
+              {/* Vendor Coordination */}
+              <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 shadow-sm">
+                <div className="flex items-start space-x-3">
+                  <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                    </svg>
+                  </div>
+                  <div className="flex-1">
+                    <h4 className="font-semibold text-blue-800 mb-1">Smart Vendor Sync</h4>
+                    <p className="text-sm text-blue-700 mb-3">
+                      I can automatically coordinate with your {currentEvent.vendors.total} vendors and send setup reminders 48h before the event.
+                    </p>
+                    <div className="flex space-x-2">
+                      <button className="text-xs bg-gradient-to-r from-blue-600 to-blue-700 text-white px-3 py-2 rounded-lg hover:from-blue-700 hover:to-blue-800 font-medium shadow-sm">
+                        Enable auto-coordination
+                      </button>
+                    </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+            {/* AI Chat Input */}
+            <div className="border-t border-blue-100 p-6 bg-gradient-to-r from-blue-50/50 to-emerald-50/50">
+              <div className="relative">
+                <input
+                  type="text"
+                  placeholder="Ask me anything: 'How can I increase sponsor ROI?' or 'Generate event timeline'"
+                  className="w-full bg-white border border-blue-200 rounded-xl px-4 py-3 text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm shadow-sm"
+                />
+                <button className="absolute right-2 top-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white p-2 rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all duration-200">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                  </svg>
+                </button>
+              </div>
+              <p className="text-xs text-blue-600 mt-2 font-medium">
+                💬 Powered by EventOS AI • Trained on 10,000+ successful events
+              </p>
+                        </div>
+                      </div>
+        )}
+
+        {/* Enhanced Central Command Interface */}
+        <div className="flex-1 relative p-8">
+          <div className="h-full grid grid-cols-12 gap-6">
             
-            {/* Central Event Sphere Placeholder */}
-            <div className="relative">
-              {/* Main Event Sphere */}
-              <div className="w-64 h-64 md:w-80 md:h-80 bg-gradient-to-br from-cyan-400 via-purple-500 to-pink-500 rounded-full flex items-center justify-center shadow-2xl shadow-purple-500/50 animate-pulse">
-                <div className="text-center text-white">
-                  <div className="text-4xl mb-2">🎯</div>
-                  <h3 className="text-xl font-bold">Tech Summit 2024</h3>
-                  <p className="text-sm opacity-80">March 15-17</p>
-                  <div className="mt-2 flex items-center justify-center space-x-2">
-                    <div className="w-2 h-2 bg-green-300 rounded-full animate-pulse"></div>
-                    <span className="text-xs">LIVE</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Orbital Ring */}
-              <div className="absolute inset-0 border-2 border-white/20 rounded-full animate-spin" style={{width: '120%', height: '120%', left: '-10%', top: '-10%'}}></div>
-              <div className="absolute inset-0 border border-white/10 rounded-full animate-spin" style={{width: '140%', height: '140%', left: '-20%', top: '-20%', animationDirection: 'reverse', animationDuration: '20s'}}></div>
-            </div>
-
-            {/* Floating Action Bubbles - Positioned around the central sphere */}
-            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+            {/* Left Column - Quick Stats & Dashboard Navigation */}
+            <div className="col-span-3 space-y-6">
               
-              {/* AI Copilot Button */}
-              <div className="absolute -top-32 -left-4 animate-bounce">
-                <button className="w-16 h-16 bg-gradient-to-r from-emerald-400 to-cyan-500 rounded-full shadow-lg shadow-emerald-500/50 flex items-center justify-center text-white text-2xl hover:scale-110 transition-transform duration-300">
-                  🤖
-                </button>
-                <div className="text-white/70 text-xs text-center mt-2">AI Copilot</div>
-              </div>
-
-              {/* Quick Add Button */}
-              <div className="absolute -top-20 left-20 animate-bounce delay-300">
-                <button className="w-12 h-12 bg-gradient-to-r from-purple-400 to-pink-500 rounded-full shadow-lg shadow-purple-500/50 flex items-center justify-center text-white text-xl hover:scale-110 transition-transform duration-300">
-                  ➕
-                </button>
-                <div className="text-white/70 text-xs text-center mt-1">Quick Add</div>
-              </div>
-
-              {/* Emergency Button */}
-              <div className="absolute top-20 -right-16 animate-bounce delay-700">
-                <button className="w-14 h-14 bg-gradient-to-r from-red-400 to-orange-500 rounded-full shadow-lg shadow-red-500/50 flex items-center justify-center text-white text-xl hover:scale-110 transition-transform duration-300">
-                  🚨
-                </button>
-                <div className="text-white/70 text-xs text-center mt-1">Emergency</div>
-              </div>
-            </div>
-
-            {/* Status Indicators */}
-            <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2">
-              <div className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl px-6 py-3">
-                <div className="flex items-center space-x-6 text-white/80">
-                  <div className="flex items-center space-x-2">
-                    <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
-                    <span className="text-sm">1,247 Attendees</span>
+              {/* EventOS Dashboard Navigation */}
+              <div className="bg-white/80 backdrop-blur-lg border border-blue-200 rounded-2xl p-6 shadow-xl shadow-blue-500/10">
+                <h3 className="text-lg font-bold text-blue-800 mb-4">EventOS Dashboards</h3>
+                <div className="space-y-3">
+                  <button className="w-full flex items-center space-x-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white px-4 py-3 rounded-xl shadow-lg shadow-blue-500/25">
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    </svg>
+                    <div className="text-left">
+                      <div className="font-semibold text-sm">Mission Control</div>
+                      <div className="text-xs opacity-90">Current</div>
+                    </div>
+                  </button>
+                  
+                  <Link href="/dashboard/event-architect" className="w-full flex items-center space-x-3 bg-blue-50 hover:bg-blue-100 text-blue-700 px-4 py-3 rounded-xl transition-colors">
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                    </svg>
+                    <div className="text-left">
+                      <div className="font-semibold text-sm">Event Architect</div>
+                      <div className="text-xs opacity-70">AI Planning</div>
+                    </div>
+                  </Link>
+                  
+                  <button className="w-full flex items-center space-x-3 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 px-4 py-3 rounded-xl transition-colors">
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                    </svg>
+                    <div className="text-left">
+                      <div className="font-semibold text-sm">People Universe</div>
+                      <div className="text-xs opacity-70">Attendees</div>
+                    </div>
+                  </button>
+                  
+                  <button className="w-full flex items-center space-x-3 bg-purple-50 hover:bg-purple-100 text-purple-700 px-4 py-3 rounded-xl transition-colors">
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4-8-4m16 0v10l-8 4-8-4V7" />
+                    </svg>
+                    <div className="text-left">
+                      <div className="font-semibold text-sm">Vendor Command</div>
+                      <div className="text-xs opacity-70">Suppliers</div>
+                      </div>
+                  </button>
+                  
+                  <button className="w-full flex items-center space-x-3 bg-amber-50 hover:bg-amber-100 text-amber-700 px-4 py-3 rounded-xl transition-colors">
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                    </svg>
+                    <div className="text-left">
+                      <div className="font-semibold text-sm">Analytics Observatory</div>
+                      <div className="text-xs opacity-70">Insights</div>
+                    </div>
+                  </button>
                   </div>
-                  <div className="w-px h-4 bg-white/30"></div>
-                  <div className="flex items-center space-x-2">
-                    <div className="w-3 h-3 bg-blue-400 rounded-full animate-pulse"></div>
-                    <span className="text-sm">12 Vendors</span>
+                </div>
+
+              {/* Quick Event Stats */}
+              <div className="bg-white/80 backdrop-blur-lg border border-emerald-200 rounded-2xl p-6 shadow-xl shadow-emerald-500/10">
+                <h3 className="text-lg font-bold text-emerald-800 mb-4">Live Event Stats</h3>
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-600">Check-in Progress</span>
+                    <span className="font-bold text-emerald-700">{Math.round((currentEvent.attendees.checkedIn / currentEvent.attendees.registered) * 100)}%</span>
                   </div>
-                  <div className="w-px h-4 bg-white/30"></div>
-                  <div className="flex items-center space-x-2">
-                    <div className="w-3 h-3 bg-yellow-400 rounded-full animate-pulse"></div>
-                    <span className="text-sm">5 Sponsors</span>
+                  <div className="w-full bg-emerald-100 rounded-full h-2">
+                    <div 
+                      className="bg-gradient-to-r from-emerald-500 to-emerald-600 h-2 rounded-full transition-all duration-1000"
+                      style={{ width: `${(currentEvent.attendees.checkedIn / currentEvent.attendees.registered) * 100}%` }}
+                    ></div>
+                        </div>
+                  
+                  <div className="grid grid-cols-2 gap-4 mt-6">
+                    <div className="text-center">
+                      <div className="text-2xl font-bold text-blue-700">{currentEvent.sessions.live}</div>
+                      <div className="text-xs text-gray-600">Live Sessions</div>
+                      </div>
+                    <div className="text-center">
+                      <div className="text-2xl font-bold text-purple-700">{currentEvent.vendors.active}</div>
+                      <div className="text-xs text-gray-600">Active Vendors</div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          </div>
-        </div>
 
-        {/* Bottom Navigation Arc */}
-        <div className="relative">
-          <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 mb-4">
-            <div className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-full px-8 py-4">
-              <div className="flex items-center space-x-6">
-                <button className="w-12 h-12 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full flex items-center justify-center text-white hover:scale-110 transition-transform duration-300 shadow-lg">
-                  🏠
-                </button>
-                <button className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center text-white/70 hover:bg-white/30 hover:scale-110 transition-all duration-300">
-                  👥
-                </button>
-                <button className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center text-white/70 hover:bg-white/30 hover:scale-110 transition-all duration-300">
-                  📊
-                </button>
-                <button className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center text-white/70 hover:bg-white/30 hover:scale-110 transition-all duration-300">
-                  ⚙️
-                </button>
+            {/* Center Column - Main Event Sphere */}
+            <div className="col-span-6 flex items-center justify-center">
+              <div className="relative">
+                
+                {/* Enhanced Event Sphere */}
+                <div 
+                  className={`w-72 h-72 bg-gradient-to-br ${currentEvent.theme} rounded-full flex items-center justify-center shadow-2xl cursor-pointer transition-all duration-700 hover:scale-105 relative overflow-hidden`}
+                  onClick={() => setSelectedEvent((prev) => (prev + 1) % events.length)}
+                >
+                  {/* Sphere Content */}
+                  <div className="text-center text-white relative z-10 p-6">
+                    <h2 className="text-2xl font-bold mb-2">{currentEvent.name}</h2>
+                    <p className="text-sm opacity-90 mb-1">{currentEvent.type}</p>
+                    <p className="text-xs opacity-75 mb-4">{currentEvent.venue}</p>
+                    <p className="text-sm opacity-90 mb-6">{currentEvent.date}</p>
+                    
+                    {/* Live Status Badge */}
+                    <div className={`inline-flex items-center space-x-2 px-4 py-2 rounded-full mb-6 ${
+                      currentEvent.status === 'live' ? 'bg-emerald-500/20 border border-emerald-300' :
+                      currentEvent.status === 'upcoming' ? 'bg-blue-500/20 border border-blue-300' : 
+                      'bg-amber-500/20 border border-amber-300'
+                    }`}>
+                      <div className={`w-2 h-2 rounded-full animate-pulse ${
+                        currentEvent.status === 'live' ? 'bg-emerald-300' :
+                        currentEvent.status === 'upcoming' ? 'bg-blue-300' : 'bg-amber-300'
+                      }`}></div>
+                      <span className="text-sm font-bold uppercase tracking-wide">
+                        {currentEvent.status}
+                      </span>
+                    </div>
+
+                    {/* Key Metrics Grid */}
+                    <div className="grid grid-cols-2 gap-4 text-center">
+                      <div>
+                        <div className="text-xl font-bold">{currentEvent.attendees.registered}</div>
+                        <div className="text-xs opacity-75">Registered</div>
+                      </div>
+                      <div>
+                        <div className="text-xl font-bold">{currentEvent.progress}%</div>
+                        <div className="text-xs opacity-75">Complete</div>
+                      </div>
+                      </div>
+                    </div>
+                  
+                  {/* Animated Background Effects */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-black/20"></div>
+                  <div className="absolute top-4 right-4 w-8 h-8 bg-white/20 rounded-full animate-pulse"></div>
+                  <div className="absolute bottom-6 left-6 w-4 h-4 bg-white/15 rounded-full animate-pulse delay-1000"></div>
+                </div>
+
+                {/* Enhanced Orbital Rings with Labels */}
+                <div className="absolute inset-0 pointer-events-none">
+                  
+                  {/* Attendee Ring */}
+                  <div 
+                    className="absolute border-2 border-emerald-400/40 rounded-full animate-spin"
+                    style={{
+                      width: '120%', height: '120%', left: '-10%', top: '-10%',
+                      animationDuration: '20s'
+                    }}
+                  >
+                    <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-emerald-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg">
+                      {currentEvent.attendees.registered} Attendees
+                    </div>
+                    <div 
+                      className="absolute w-4 h-4 bg-emerald-500 rounded-full shadow-lg border-2 border-white"
+                      style={{
+                        top: '-2px', left: '50%', transform: 'translateX(-50%)'
+                      }}
+                    ></div>
+                  </div>
+
+                  {/* Vendor Ring */}
+                  <div 
+                    className="absolute border-2 border-blue-400/40 rounded-full animate-spin"
+                    style={{
+                      width: '140%', height: '140%', left: '-20%', top: '-20%',
+                      animationDuration: '30s', animationDirection: 'reverse'
+                    }}
+                  >
+                    <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-blue-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg">
+                      {currentEvent.vendors.total} Vendors
+                    </div>
+                    <div 
+                      className="absolute w-3 h-3 bg-blue-500 rounded-full shadow-lg border-2 border-white"
+                      style={{
+                        top: '-1.5px', left: '50%', transform: 'translateX(-50%)'
+                      }}
+                    ></div>
+                  </div>
+
+                  {/* Sponsor Ring */}
+                  <div 
+                    className="absolute border-2 border-purple-400/40 rounded-full animate-spin"
+                    style={{
+                      width: '160%', height: '160%', left: '-30%', top: '-30%',
+                      animationDuration: '40s'
+                    }}
+                  >
+                    <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-purple-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg">
+                      {currentEvent.sponsors.total} Sponsors
+                      </div>
+                    <div 
+                      className="absolute w-2 h-2 bg-purple-500 rounded-full shadow-lg border border-white"
+                      style={{
+                        top: '-1px', left: '50%', transform: 'translateX(-50%)'
+                      }}
+                    ></div>
+                      </div>
+                    </div>
+
+                {/* Event Selector */}
+                <div className="absolute -bottom-12 left-1/2 transform -translate-x-1/2 flex space-x-3">
+                  {events.map((event, index) => (
+                    <button
+                      key={event.id}
+                      onClick={() => setSelectedEvent(index)}
+                      className={`w-4 h-4 rounded-full transition-all duration-300 border-2 ${
+                        selectedEvent === index 
+                          ? `bg-gradient-to-r ${event.theme} border-white shadow-lg scale-125` 
+                          : 'bg-white/60 border-gray-300 hover:bg-white/80'
+                      }`}
+                    >
+                      <span className="sr-only">Select {event.name}</span>
+                    </button>
+                  ))}
+                      </div>
+                    </div>
+                  </div>
+
+            {/* Right Column - Live Updates & Actions */}
+            <div className="col-span-3 space-y-6">
+              
+              {/* Urgent Tasks */}
+              <div className="bg-white/80 backdrop-blur-lg border border-amber-200 rounded-2xl p-6 shadow-xl shadow-amber-500/10">
+                <div className="flex items-center space-x-2 mb-4">
+                  <div className="w-3 h-3 bg-amber-500 rounded-full animate-pulse"></div>
+                  <h3 className="text-lg font-bold text-amber-800">Urgent Tasks</h3>
+                  <div className="bg-amber-500 text-white text-xs font-bold px-2 py-1 rounded-full">
+                    {currentEvent.urgentTasks}
+                  </div>
+                </div>
+                <div className="space-y-3">
+                  <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
+                    <p className="text-sm font-semibold text-amber-800">Catering Setup Delay</p>
+                    <p className="text-xs text-amber-600 mt-1">Vendor running 2h behind schedule</p>
+                    <button className="text-xs bg-amber-600 text-white px-3 py-1 rounded-md mt-2 hover:bg-amber-700">
+                      Contact Vendor
+                    </button>
+                  </div>
+                  <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+                    <p className="text-sm font-semibold text-red-800">AV Equipment Issue</p>
+                    <p className="text-xs text-red-600 mt-1">Main stage microphone not working</p>
+                    <button className="text-xs bg-red-600 text-white px-3 py-1 rounded-md mt-2 hover:bg-red-700">
+                      Emergency Fix
+                    </button>
+                </div>
               </div>
             </div>
-          </div>
+
+              {/* Quick Actions */}
+              <div className="bg-white/80 backdrop-blur-lg border border-blue-200 rounded-2xl p-6 shadow-xl shadow-blue-500/10">
+                <h3 className="text-lg font-bold text-blue-800 mb-4">Quick Actions</h3>
+                <div className="space-y-3">
+                  <button className="w-full flex items-center space-x-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white px-4 py-3 rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all">
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                    </svg>
+                    <span className="font-semibold">Add New Session</span>
+                  </button>
+                  <button className="w-full flex items-center space-x-3 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 px-4 py-3 rounded-xl transition-colors">
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                    </svg>
+                    <span className="font-semibold">Send Announcement</span>
+                  </button>
+                  <button className="w-full flex items-center space-x-3 bg-purple-50 hover:bg-purple-100 text-purple-700 px-4 py-3 rounded-xl transition-colors">
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                    </svg>
+                    <span className="font-semibold">Generate Report</span>
+                  </button>
+              </div>
+            </div>
+
+              {/* Live Feed */}
+              <div className="bg-white/80 backdrop-blur-lg border border-emerald-200 rounded-2xl p-6 shadow-xl shadow-emerald-500/10">
+                <h3 className="text-lg font-bold text-emerald-800 mb-4">Live Activity</h3>
+                <div className="space-y-3 text-sm">
+                  <div className="flex items-start space-x-3">
+                    <div className="w-2 h-2 bg-emerald-500 rounded-full mt-2 animate-pulse"></div>
+                    <div>
+                      <p className="font-semibold text-gray-800">New Registration</p>
+                      <p className="text-gray-600 text-xs">Sarah Chen registered for VIP package</p>
+                      <p className="text-gray-400 text-xs">2 min ago</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start space-x-3">
+                    <div className="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
+                    <div>
+                      <p className="font-semibold text-gray-800">Vendor Update</p>
+                      <p className="text-gray-600 text-xs">Catering confirmed arrival time</p>
+                      <p className="text-gray-400 text-xs">5 min ago</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start space-x-3">
+                    <div className="w-2 h-2 bg-purple-500 rounded-full mt-2"></div>
+                    <div>
+                      <p className="font-semibold text-gray-800">Sponsor Engagement</p>
+                      <p className="text-gray-600 text-xs">TechCorp booth had 47 visitors</p>
+                      <p className="text-gray-400 text-xs">12 min ago</p>
+              </div>
+            </div>
+              </div>
+            </div>
+              </div>
+            </div>
         </div>
       </div>
     </div>
