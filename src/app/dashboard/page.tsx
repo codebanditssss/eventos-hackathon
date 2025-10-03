@@ -329,7 +329,7 @@ export default function MissionControlDashboard() {
                     </div>
                   </Link>
                   
-                  <button className="w-full flex items-center space-x-3 bg-purple-50 hover:bg-purple-100 text-purple-700 px-4 py-3 rounded-xl transition-colors">
+                  <Link href="/dashboard/vendor-command" className="w-full flex items-center space-x-3 bg-purple-50 hover:bg-purple-100 text-purple-700 px-4 py-3 rounded-xl transition-colors">
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4-8-4m16 0v10l-8 4-8-4V7" />
                     </svg>
@@ -337,7 +337,7 @@ export default function MissionControlDashboard() {
                       <div className="font-semibold text-sm">Vendor Command</div>
                       <div className="text-xs opacity-70">Suppliers</div>
                       </div>
-                  </button>
+                  </Link>
                   
                   <button className="w-full flex items-center space-x-3 bg-amber-50 hover:bg-amber-100 text-amber-700 px-4 py-3 rounded-xl transition-colors">
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
