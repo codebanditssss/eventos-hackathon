@@ -78,6 +78,13 @@ export default function MissionControlDashboard() {
   const [isLoading, setIsLoading] = useState(true)
   const [isLoadingInsights, setIsLoadingInsights] = useState(false)
   
+  // AI Copilot state
+  const [chatMessages, setChatMessages] = useState<Array<{role: 'user' | 'assistant', content: string}>>([
+    { role: 'assistant', content: 'Hi! I\'m your AI event assistant. How can I help you with your event today?' }
+  ])
+  const [chatInput, setChatInput] = useState('')
+  const [isSendingMessage, setIsSendingMessage] = useState(false)
+  
   // Sparkline data (last 6 hours trend)
   const attendanceTrend = [720, 745, 780, 820, 865, 892]
   const sessionTrend = [1, 2, 2, 3, 3, 3]
@@ -211,6 +218,58 @@ export default function MissionControlDashboard() {
 
   const currentEvent = events[selectedEvent] || mockEvents[0]
 
+  // Handle AI Copilot message
+  const handleSendMessage = async () => {
+    if (!chatInput.trim() || isSendingMessage) return
+
+    const userMessage = chatInput.trim()
+    setChatInput('')
+    
+    // Add user message to chat
+    setChatMessages(prev => [...prev, { role: 'user', content: userMessage }])
+    setIsSendingMessage(true)
+
+    try {
+      const response = await fetch('/api/ai/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          messages: [
+            ...chatMessages,
+            { role: 'user', content: userMessage }
+          ],
+          eventContext: currentEvent ? {
+            name: currentEvent.name,
+            type: currentEvent.type,
+            status: currentEvent.status,
+            attendees: currentEvent.attendees.registered,
+            sessions: currentEvent.sessions.live,
+            progress: currentEvent.progress
+          } : undefined
+        })
+      })
+
+      const data = await response.json()
+      
+      if (data.message) {
+        setChatMessages(prev => [...prev, { role: 'assistant', content: data.message }])
+      } else {
+        setChatMessages(prev => [...prev, { 
+          role: 'assistant', 
+          content: 'Sorry, I encountered an error. Please try again.' 
+        }])
+      }
+    } catch (error) {
+      console.error('Chat error:', error)
+      setChatMessages(prev => [...prev, { 
+        role: 'assistant', 
+        content: 'Sorry, I\'m having trouble connecting. Please try again.' 
+      }])
+    } finally {
+      setIsSendingMessage(false)
+    }
+  }
+
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 1000)
     return () => clearInterval(timer)
@@ -330,7 +389,7 @@ export default function MissionControlDashboard() {
         
         {/* Enhanced AI Copilot Sidebar */}
         {aiCopilotOpen && (
-          <div className="w-96 bg-white/95 backdrop-blur-lg border-r border-blue-200 shadow-xl shadow-blue-500/10 overflow-y-auto">
+          <div className="w-96 bg-white/95 backdrop-blur-lg border-r border-blue-200 shadow-xl shadow-blue-500/10 flex flex-col h-screen">
             {/* AI Copilot Header */}
             <div className="p-6 border-b border-blue-100 bg-gradient-to-r from-blue-50 to-emerald-50">
               <div className="flex items-center space-x-3 mb-3">
@@ -351,96 +410,67 @@ export default function MissionControlDashboard() {
         </div>
         </div>
 
-            {/* AI Suggestions */}
-            <div className="p-6 space-y-4">
-              {/* Urgent Task Alert */}
-              <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 shadow-sm">
-                <div className="flex items-start space-x-3">
-                  <div className="w-8 h-8 bg-gradient-to-r from-amber-500 to-amber-600 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
-                    </svg>
-                        </div>
-                  <div className="flex-1">
-                    <h4 className="font-semibold text-amber-800 mb-1">Urgent: Task Prioritization</h4>
-                    <p className="text-sm text-amber-700 mb-3">
-                      {currentEvent.name} has {currentEvent.urgentTasks} critical tasks requiring immediate attention. Based on similar events, I recommend addressing catering logistics first.
-                    </p>
+            {/* AI Chat Messages */}
+            <div className="flex-1 overflow-y-auto p-6 space-y-4">
+              {chatMessages.map((msg, idx) => (
+                <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                  <div className={`max-w-[80%] rounded-xl p-3 ${
+                    msg.role === 'user' 
+                      ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white' 
+                      : 'bg-gray-100 text-gray-800'
+                  }`}>
+                    <p className="text-sm">{msg.content}</p>
+                  </div>
+                </div>
+              ))}
+              
+              {isSendingMessage && (
+                <div className="flex justify-start">
+                  <div className="bg-gray-100 rounded-xl p-3">
                     <div className="flex space-x-2">
-                      <button className="text-xs bg-gradient-to-r from-amber-600 to-amber-700 text-white px-3 py-2 rounded-lg hover:from-amber-700 hover:to-amber-800 font-medium shadow-sm">
-                        Auto-prioritize tasks
-                      </button>
-                      <button className="text-xs bg-white text-amber-700 border border-amber-300 px-3 py-2 rounded-lg hover:bg-amber-50 font-medium">
-                        Show task details
-                      </button>
-                      </div>
+                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{animationDelay: '0ms'}}></div>
+                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{animationDelay: '150ms'}}></div>
+                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{animationDelay: '300ms'}}></div>
                     </div>
                   </div>
                 </div>
-
-              {/* Success Insight */}
-              <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-4 shadow-sm">
-                <div className="flex items-start space-x-3">
-                  <div className="w-8 h-8 bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-                    </svg>
-                  </div>
-                  <div className="flex-1">
-                    <h4 className="font-semibold text-emerald-800 mb-1">Opportunity Detected</h4>
-                    <p className="text-sm text-emerald-700 mb-3">
-                      Registration is 18% above target! Similar events saw 25% revenue increase by opening premium networking sessions.
-                    </p>
-                    <button className="text-xs bg-gradient-to-r from-emerald-600 to-emerald-700 text-white px-3 py-2 rounded-lg hover:from-emerald-700 hover:to-emerald-800 font-medium shadow-sm">
-                      Create premium add-ons
-                    </button>
-                  </div>
-                        </div>
+              )}
             </div>
-
-              {/* Vendor Coordination */}
-              <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 shadow-sm">
-                <div className="flex items-start space-x-3">
-                  <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                    </svg>
-                  </div>
-                  <div className="flex-1">
-                    <h4 className="font-semibold text-blue-800 mb-1">Smart Vendor Sync</h4>
-                    <p className="text-sm text-blue-700 mb-3">
-                      I can automatically coordinate with your {currentEvent.vendors.total} vendors and send setup reminders 48h before the event.
-                    </p>
-                    <div className="flex space-x-2">
-                      <button className="text-xs bg-gradient-to-r from-blue-600 to-blue-700 text-white px-3 py-2 rounded-lg hover:from-blue-700 hover:to-blue-800 font-medium shadow-sm">
-                        Enable auto-coordination
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-                </div>
 
             {/* AI Chat Input */}
             <div className="border-t border-blue-100 p-6 bg-gradient-to-r from-blue-50/50 to-emerald-50/50">
               <div className="relative">
                 <input
                   type="text"
-                  placeholder="Ask me anything: 'How can I increase sponsor ROI?' or 'Generate event timeline'"
-                  className="w-full bg-white border border-blue-200 rounded-xl px-4 py-3 text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm shadow-sm"
+                  value={chatInput}
+                  onChange={(e) => setChatInput(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                      e.preventDefault()
+                      handleSendMessage()
+                    }
+                  }}
+                  disabled={isSendingMessage}
+                  placeholder="Ask me anything about your event..."
+                  className="w-full bg-white border border-blue-200 rounded-xl px-4 py-3 pr-12 text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm shadow-sm disabled:opacity-50"
                 />
-                <button className="absolute right-2 top-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white p-2 rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all duration-200">
+                <button 
+                  onClick={handleSendMessage}
+                  disabled={isSendingMessage || !chatInput.trim()}
+                  className="absolute right-2 top-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white p-2 rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
                   </svg>
                 </button>
               </div>
               <p className="text-xs text-blue-600 mt-2 font-medium">
-                <MessageSquare className="w-3 h-3 inline" /> Powered by EventOS AI • Trained on 10,000+ successful events
+                <MessageSquare className="w-3 h-3 inline" /> Powered by EventOS AI • Press Enter to send
               </p>
-                        </div>
-                      </div>
+            </div>
+          </div>
         )}
+
 
         {/* Enhanced Central Command Interface */}
         <div className="flex-1 relative p-4 md:p-6 lg:p-8 overflow-y-auto">
