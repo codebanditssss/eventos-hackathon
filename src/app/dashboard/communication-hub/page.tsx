@@ -12,13 +12,13 @@ export default function CommunicationHubDashboard() {
   const conversations = [
     {
       id: 1,
-      name: 'Sarah Chen',
+      name: 'Taksh Sehrawat',
       role: 'Speaker',
       lastMessage: 'Thanks! I\'ll be there 30 minutes early for the sound check.',
       timestamp: '2 min ago',
       unread: false,
       important: true,
-      avatar: 'SC'
+      avatar: 'TS'
     },
     {
       id: 2,
@@ -289,10 +289,10 @@ export default function CommunicationHubDashboard() {
                       <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-3">
                           <div className="w-12 h-12 bg-gradient-to-r from-cyan-600 to-cyan-700 rounded-xl flex items-center justify-center text-white font-bold">
-                            SC
+                            TS
                           </div>
                           <div>
-                            <h3 className="text-xl font-bold text-gray-800">Sarah Chen</h3>
+                            <h3 className="text-xl font-bold text-gray-800">Taksh Sehrawat</h3>
                             <p className="text-sm text-cyan-600">Speaker • Keynote</p>
                           </div>
                         </div>
@@ -316,7 +316,7 @@ export default function CommunicationHubDashboard() {
                       {/* Received Message */}
                       <div className="flex items-start space-x-3">
                         <div className="w-10 h-10 bg-gradient-to-r from-cyan-600 to-cyan-700 rounded-lg flex items-center justify-center text-white font-bold text-sm">
-                          SC
+                          TS
                         </div>
                         <div className="flex-1">
                           <div className="bg-gray-100 rounded-2xl rounded-tl-none px-4 py-3 max-w-lg">
@@ -339,7 +339,7 @@ export default function CommunicationHubDashboard() {
                       {/* Received Message */}
                       <div className="flex items-start space-x-3">
                         <div className="w-10 h-10 bg-gradient-to-r from-cyan-600 to-cyan-700 rounded-lg flex items-center justify-center text-white font-bold text-sm">
-                          SC
+                          TS
                         </div>
                         <div className="flex-1">
                           <div className="bg-gray-100 rounded-2xl rounded-tl-none px-4 py-3 max-w-lg">

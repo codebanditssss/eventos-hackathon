@@ -19,7 +19,7 @@ export default function EventTimelineDashboard() {
     {
       id: 1,
       title: 'Keynote: Future of AI',
-      speaker: 'Dr. Sarah Chen',
+      speaker: 'Devansh Datta',
       time: '09:00 - 10:00',
       venue: 'Main Hall',
       attendees: 892,
@@ -31,7 +31,7 @@ export default function EventTimelineDashboard() {
     {
       id: 2,
       title: 'AI in Product Development',
-      speaker: 'John Martinez',
+      speaker: 'Taksh Sehrawat',
       time: '10:30 - 11:30',
       venue: 'Room A',
       attendees: 234,
@@ -67,7 +67,7 @@ export default function EventTimelineDashboard() {
     {
       id: 5,
       title: 'Machine Learning Workshop',
-      speaker: 'Dr. Emily Zhang',
+      speaker: 'Anushka Bharghav',
       time: '14:00 - 15:30',
       venue: 'Room B',
       attendees: 156,
@@ -106,43 +106,43 @@ export default function EventTimelineDashboard() {
   const speakers = [
     {
       id: 1,
-      name: 'Dr. Sarah Chen',
-      title: 'Chief AI Officer',
-      company: 'TechCorp',
+      name: 'Devansh Datta',
+      title: 'AI Engineer',
+      company: 'EventOS',
       sessions: 2,
-      avatar: 'SC',
-      bio: 'Leading AI researcher with 15+ years experience',
+      avatar: 'DD',
+      bio: 'AI & Machine Learning specialist with focus on event optimization',
       status: 'confirmed'
     },
     {
       id: 2,
-      name: 'John Martinez',
-      title: 'VP of Engineering',
-      company: 'InnovateLabs',
+      name: 'Taksh Sehrawat',
+      title: 'Tech Lead',
+      company: 'EventOS',
       sessions: 1,
-      avatar: 'JM',
-      bio: 'Product development expert and startup advisor',
+      avatar: 'TS',
+      bio: 'Full-stack engineer and event technology expert',
       status: 'confirmed'
     },
     {
       id: 3,
-      name: 'Dr. Emily Zhang',
-      title: 'ML Research Lead',
-      company: 'AI Dynamics',
+      name: 'Anushka Bharghav',
+      title: 'Product Manager',
+      company: 'EventOS',
       sessions: 1,
-      avatar: 'EZ',
-      bio: 'Machine learning specialist and author',
+      avatar: 'AB',
+      bio: 'Product strategy and event management specialist',
       status: 'confirmed'
     },
     {
       id: 4,
-      name: 'Michael Roberts',
-      title: 'CTO',
-      company: 'DataFlow Inc',
+      name: 'Khushi Diwan',
+      title: 'Event Organizer',
+      company: 'EventOS',
       sessions: 1,
-      avatar: 'MR',
-      bio: 'Cloud architecture and scaling expert',
-      status: 'pending'
+      avatar: 'KD',
+      bio: 'Event coordination and platform innovation leader',
+      status: 'confirmed'
     }
   ]
 

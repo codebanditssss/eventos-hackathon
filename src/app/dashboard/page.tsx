@@ -159,11 +159,11 @@ export default function MissionControlDashboard() {
               {/* Profile */}
               <button className="flex items-center space-x-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 rounded-xl px-4 py-2 text-white transition-all duration-200 shadow-lg shadow-blue-500/25">
                 <div className="w-9 h-9 bg-white/20 rounded-lg flex items-center justify-center">
-                  <span className="text-sm font-bold">EC</span>
+                  <span className="text-sm font-bold">KD</span>
             </div>
                 <div className="hidden md:block text-left">
-                  <div className="text-sm font-bold">Event Commander</div>
-                  <div className="text-xs opacity-90">Premium Account</div>
+                  <div className="text-sm font-bold">Khushi Diwan</div>
+                  <div className="text-xs opacity-90">Event Organizer</div>
                   </div>
                 </button>
             </div>
@@ -356,7 +356,7 @@ export default function MissionControlDashboard() {
                     <div className="text-left">
                       <div className="font-semibold text-sm">Communication Hub</div>
                       <div className="text-xs opacity-70">Messaging</div>
-                    </div>
+                      </div>
                   </Link>
                   
                   <Link href="/dashboard/event-timeline" className="w-full flex items-center space-x-3 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 px-4 py-3 rounded-xl transition-colors">

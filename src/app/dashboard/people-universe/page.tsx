@@ -9,10 +9,10 @@ export default function PeopleUniverseDashboard() {
 
   // Mock attendee data
   const attendees = [
-    { id: 1, name: 'Sarah Chen', title: 'CTO', company: 'TechCorp', type: 'vip', checked: true, interests: ['AI', 'Cloud'], avatar: 'SC' },
-    { id: 2, name: 'Michael Rodriguez', title: 'Product Manager', company: 'StartupX', type: 'speaker', checked: true, interests: ['Product', 'UX'], avatar: 'MR' },
-    { id: 3, name: 'Emily Watson', title: 'Developer', company: 'DevCo', type: 'regular', checked: true, interests: ['Web3', 'AI'], avatar: 'EW' },
-    { id: 4, name: 'David Kim', title: 'CEO', company: 'InnovateLabs', type: 'sponsor', checked: false, interests: ['Investment', 'Startups'], avatar: 'DK' },
+    { id: 1, name: 'Khushi Diwan', title: 'Event Organizer', company: 'EventOS', type: 'vip', checked: true, interests: ['Event Tech', 'AI'], avatar: 'KD' },
+    { id: 2, name: 'Taksh Sehrawat', title: 'Tech Lead', company: 'EventOS', type: 'speaker', checked: true, interests: ['Full Stack', 'Cloud'], avatar: 'TS' },
+    { id: 3, name: 'Devansh Datta', title: 'AI Engineer', company: 'EventOS', type: 'speaker', checked: true, interests: ['ML', 'AI'], avatar: 'DD' },
+    { id: 4, name: 'Anushka Bharghav', title: 'Product Manager', company: 'EventOS', type: 'vip', checked: true, interests: ['Product', 'Strategy'], avatar: 'AB' },
     { id: 5, name: 'Lisa Anderson', title: 'Designer', company: 'CreativeStudio', type: 'regular', checked: true, interests: ['Design', 'UX'], avatar: 'LA' },
     { id: 6, name: 'James Wilson', title: 'Engineer', company: 'BuildTech', type: 'regular', checked: false, interests: ['Backend', 'DevOps'], avatar: 'JW' },
   ]
