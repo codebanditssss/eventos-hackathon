@@ -23,11 +23,50 @@ const EventUniverse3D = dynamic(() => import('@/components/EventUniverse3D'), {
   )
 })
 
+// Simple Sparkline Component
+const Sparkline = ({ data, color = "emerald" }: { data: number[], color?: string }) => {
+  const max = Math.max(...data)
+  const min = Math.min(...data)
+  const range = max - min || 1
+  
+  const points = data.map((value, index) => {
+    const x = (index / (data.length - 1)) * 100
+    const y = 100 - ((value - min) / range) * 100
+    return `${x},${y}`
+  }).join(' ')
+  
+  const colorMap: Record<string, string> = {
+    emerald: 'stroke-emerald-500',
+    blue: 'stroke-blue-500',
+    purple: 'stroke-purple-500',
+    amber: 'stroke-amber-500'
+  }
+  
+  return (
+    <svg className="w-full h-8" viewBox="0 0 100 100" preserveAspectRatio="none">
+      <polyline
+        points={points}
+        fill="none"
+        className={`${colorMap[color]} opacity-60`}
+        strokeWidth="3"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  )
+}
+
 export default function MissionControlDashboard() {
   const [currentTime, setCurrentTime] = useState(new Date())
   const [selectedEvent, setSelectedEvent] = useState(0)
   const [aiCopilotOpen, setAiCopilotOpen] = useState(false)
   const [dataFlow, setDataFlow] = useState(0)
+  
+  // Sparkline data (last 6 hours trend)
+  const attendanceTrend = [720, 745, 780, 820, 865, 892]
+  const sessionTrend = [1, 2, 2, 3, 3, 3]
+  const engagementTrend = [75, 78, 82, 85, 87, 87]
+  const progressTrend = [45, 50, 55, 60, 63, 65]
 
   // EventOS-specific event data with real event management context
   const events = [
@@ -258,7 +297,7 @@ export default function MissionControlDashboard() {
                     </button>
                   </div>
                         </div>
-                      </div>
+            </div>
 
               {/* Vendor Coordination */}
               <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 shadow-sm">
@@ -276,11 +315,11 @@ export default function MissionControlDashboard() {
                     <div className="flex space-x-2">
                       <button className="text-xs bg-gradient-to-r from-blue-600 to-blue-700 text-white px-3 py-2 rounded-lg hover:from-blue-700 hover:to-blue-800 font-medium shadow-sm">
                         Enable auto-coordination
-                      </button>
-                    </div>
-                      </div>
-                    </div>
-                  </div>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
                 </div>
 
             {/* AI Chat Input */}
@@ -331,7 +370,7 @@ export default function MissionControlDashboard() {
                 <div className="text-xs text-blue-200 mt-1">{currentEvent.date}</div>
                     </div>
                   </div>
-                </div>
+        </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 md:gap-6 pb-8">
             
@@ -350,7 +389,7 @@ export default function MissionControlDashboard() {
                       <div className="font-semibold text-sm">Mission Control</div>
                       <div className="text-xs opacity-90">Current</div>
                     </div>
-                  </button>
+              </button>
                   
                   <Link href="/dashboard/event-architect" className="w-full flex items-center space-x-3 bg-blue-50 hover:bg-blue-100 text-blue-700 px-4 py-3 rounded-xl transition-colors">
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -412,7 +451,7 @@ export default function MissionControlDashboard() {
                     </div>
                   </Link>
                         </div>
-                      </div>
+        </div>
 
               {/* Mini Venue Map */}
               <div className="bg-white/90 backdrop-blur-xl border border-indigo-100 rounded-2xl p-6 shadow-2xl shadow-indigo-500/15">
@@ -495,104 +534,239 @@ export default function MissionControlDashboard() {
             {/* Center Column - Event Command Center */}
             <div className="lg:col-span-6 space-y-4">
               
+              {/* AI Insights Panel */}
+              <div className="bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-700 rounded-2xl p-5 text-white shadow-2xl shadow-purple-500/30 border-2 border-purple-400/20">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center space-x-2">
+                    <div className="w-8 h-8 bg-white/20 backdrop-blur-lg rounded-lg flex items-center justify-center">
+                      <Sparkles className="w-5 h-5 text-white animate-pulse" />
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-bold">AI Insights</h3>
+                      <p className="text-xs text-purple-200">Powered by EventOS AI</p>
+                    </div>
+                  </div>
+                  <div className="bg-white/10 backdrop-blur-lg px-3 py-1 rounded-full text-xs font-bold border border-white/20">
+                    3 New
+                        </div>
+                      </div>
+                
+                <div className="space-y-2">
+                  {/* Insight 1 - Critical */}
+                  <div className="bg-white/10 backdrop-blur-lg rounded-xl p-3 border border-white/20 hover:bg-white/20 transition-all cursor-pointer group">
+                    <div className="flex items-start space-x-3">
+                      <div className="w-2 h-2 bg-red-400 rounded-full mt-2 animate-pulse"></div>
+                      <div className="flex-1">
+                        <div className="flex items-center justify-between mb-1">
+                          <span className="text-sm font-bold">Critical Alert</span>
+                          <AlertCircle className="w-4 h-4 text-red-300" />
+                        </div>
+                        <p className="text-sm text-purple-100">
+                          Catering delay detected. Recommend contacting backup vendor <span className="font-bold">"QuickServe Catering"</span> for Hall B lunch service.
+                        </p>
+                        <div className="flex items-center space-x-2 mt-2">
+                          <button className="text-xs bg-white/20 hover:bg-white/30 px-3 py-1 rounded-lg font-semibold transition-colors">
+                            View Details
+                          </button>
+                          <button className="text-xs bg-red-500 hover:bg-red-600 px-3 py-1 rounded-lg font-semibold transition-colors">
+                            Contact Vendor
+                          </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                  {/* Insight 2 - Positive */}
+                  <div className="bg-white/10 backdrop-blur-lg rounded-xl p-3 border border-white/20 hover:bg-white/20 transition-all cursor-pointer group">
+                    <div className="flex items-start space-x-3">
+                      <div className="w-2 h-2 bg-emerald-400 rounded-full mt-2"></div>
+                      <div className="flex-1">
+                        <div className="flex items-center justify-between mb-1">
+                          <span className="text-sm font-bold">Opportunity Detected</span>
+                          <TrendingUp className="w-4 h-4 text-emerald-300" />
+                        </div>
+                        <p className="text-sm text-purple-100">
+                          Opening keynote engagement at <span className="font-bold">98%</span> (18% above average). Consider extending Q&A by 15 minutes.
+                        </p>
+                        <button className="text-xs bg-emerald-500 hover:bg-emerald-600 px-3 py-1 rounded-lg font-semibold mt-2 transition-colors">
+                          Extend Session
+                        </button>
+                      </div>
+                        </div>
+                      </div>
+
+                  {/* Insight 3 - Info */}
+                  <div className="bg-white/10 backdrop-blur-lg rounded-xl p-3 border border-white/20 hover:bg-white/20 transition-all cursor-pointer group">
+                    <div className="flex items-start space-x-3">
+                      <div className="w-2 h-2 bg-blue-400 rounded-full mt-2"></div>
+                      <div className="flex-1">
+                        <div className="flex items-center justify-between mb-1">
+                          <span className="text-sm font-bold">Prediction</span>
+                          <Target className="w-4 h-4 text-blue-300" />
+                        </div>
+                        <p className="text-sm text-purple-100">
+                          Check-in rate is <span className="font-bold">12% above projection</span>. Expect <span className="font-bold">1,350 total attendees</span> by 2 PM (103 above capacity).
+                        </p>
+                        <button className="text-xs bg-blue-500 hover:bg-blue-600 px-3 py-1 rounded-lg font-semibold mt-2 transition-colors">
+                          Adjust Capacity
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
               {/* Top Metrics Row */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
                 <div className="bg-white rounded-xl p-4 border border-gray-100 shadow-lg hover:shadow-xl transition-shadow duration-300">
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-sm text-gray-600">Attendance</span>
-                    <span className="text-emerald-600">↑ 12%</span>
+                    <span className="text-emerald-600 flex items-center space-x-1">
+                      <TrendingUp className="w-3 h-3" />
+                      <span className="font-bold">12%</span>
+                    </span>
                   </div>
                   <div className="text-3xl font-bold text-gray-900">{currentEvent.attendees.checkedIn}</div>
-                  <div className="text-sm text-gray-500">of {currentEvent.attendees.registered} registered</div>
-                  <div className="mt-2 w-full bg-gray-200 rounded-full h-2">
-                    <div className="bg-emerald-500 h-2 rounded-full" style={{width: `${(currentEvent.attendees.checkedIn/currentEvent.attendees.registered)*100}%`}}></div>
-                  </div>
+                  <div className="text-sm text-gray-500 mb-2">of {currentEvent.attendees.registered} registered</div>
+                  <Sparkline data={attendanceTrend} color="emerald" />
+                  <div className="text-xs text-gray-400 mt-1">Last 6 hours</div>
                 </div>
 
                 <div className="bg-white rounded-xl p-4 border border-gray-100 shadow-lg hover:shadow-xl transition-shadow duration-300">
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-sm text-gray-600">Live Sessions</span>
-                    <span className="text-blue-600">● Active</span>
+                    <span className="text-blue-600 flex items-center space-x-1">
+                      <Activity className="w-3 h-3 animate-pulse" />
+                      <span className="font-bold">Active</span>
+                    </span>
                   </div>
                   <div className="text-3xl font-bold text-gray-900">{currentEvent.sessions.live}</div>
-                  <div className="text-sm text-gray-500">{currentEvent.sessions.upcoming} upcoming</div>
-                  <div className="mt-2 flex space-x-1">
-                    {[...Array(currentEvent.sessions.live)].map((_, i) => (
-                      <div key={i} className="flex-1 bg-blue-500 rounded-full h-2"></div>
-                    ))}
-                    {[...Array(3 - currentEvent.sessions.live)].map((_, i) => (
-                      <div key={i} className="flex-1 bg-gray-200 rounded-full h-2"></div>
-                    ))}
-                  </div>
+                  <div className="text-sm text-gray-500 mb-2">{currentEvent.sessions.upcoming} upcoming</div>
+                  <Sparkline data={sessionTrend} color="blue" />
+                  <div className="text-xs text-gray-400 mt-1">Session count</div>
                 </div>
 
                 <div className="bg-white rounded-xl p-4 border border-gray-100 shadow-lg hover:shadow-xl transition-shadow duration-300">
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-sm text-gray-600">Engagement</span>
-                    <span className="text-purple-600">87%</span>
+                    <span className="text-purple-600 font-bold">87%</span>
                   </div>
                   <div className="text-3xl font-bold text-gray-900">High</div>
-                  <div className="text-sm text-gray-500">Above average</div>
-                  <div className="mt-2 flex space-x-1">
-                    {[1,2,3,4].map((i) => (
-                      <div key={i} className={`flex-1 h-6 rounded ${i <= 3 ? 'bg-purple-500' : 'bg-gray-200'}`}></div>
-                    ))}
-                  </div>
+                  <div className="text-sm text-gray-500 mb-2">Above average</div>
+                  <Sparkline data={engagementTrend} color="purple" />
+                  <div className="text-xs text-gray-400 mt-1">Trending up</div>
                 </div>
 
                 <div className="bg-white rounded-xl p-4 border border-gray-100 shadow-lg hover:shadow-xl transition-shadow duration-300">
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-sm text-gray-600">Progress</span>
-                    <span className="text-amber-600">{currentEvent.progress}%</span>
+                    <span className="text-amber-600 font-bold">{currentEvent.progress}%</span>
                   </div>
                   <div className="text-3xl font-bold text-gray-900">On Track</div>
-                  <div className="text-sm text-gray-500">Event milestone</div>
-                  <div className="mt-2 relative w-12 h-12">
-                    <svg className="transform -rotate-90 w-12 h-12">
-                      <circle cx="24" cy="24" r="20" stroke="#E5E7EB" strokeWidth="4" fill="none" />
-                      <circle cx="24" cy="24" r="20" stroke="#F59E0B" strokeWidth="4" fill="none"
-                        strokeDasharray={`${2 * Math.PI * 20}`}
-                        strokeDashoffset={`${2 * Math.PI * 20 * (1 - currentEvent.progress/100)}`} />
-                    </svg>
-                  </div>
+                  <div className="text-sm text-gray-500 mb-2">Event milestone</div>
+                  <Sparkline data={progressTrend} color="amber" />
+                  <div className="text-xs text-gray-400 mt-1">Steady progress</div>
                 </div>
               </div>
 
               {/* Main Charts Section */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* Session Engagement Chart */}
+                {/* Attendee Flow Heatmap */}
                 <div className="bg-white rounded-xl p-6 border border-gray-100 shadow-lg hover:shadow-xl transition-shadow duration-300">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Session Engagement (Live)</h3>
-                  <div className="space-y-3">
-                    <div>
-                      <div className="flex justify-between text-sm mb-1">
-                        <span className="text-gray-700 font-medium">AI in Product Development</span>
-                        <span className="text-blue-600 font-bold">98%</span>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center space-x-2">
+                    <Users className="w-5 h-5 text-indigo-600" />
+                    <span>Attendee Flow (Live)</span>
+                  </h3>
+                  <div className="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-xl p-4">
+                    {/* Flow Visualization */}
+                    <div className="space-y-3">
+                      {/* Main Hall - High Traffic */}
+                      <div className="relative bg-gradient-to-r from-red-500 to-orange-500 rounded-lg p-4 text-white overflow-hidden">
+                        <div className="absolute inset-0 opacity-30">
+                          {[...Array(20)].map((_, i) => (
+                            <div
+                              key={i}
+                              className="absolute w-2 h-2 bg-white rounded-full animate-pulse"
+                              style={{
+                                left: `${Math.random() * 100}%`,
+                                top: `${Math.random() * 100}%`,
+                                animationDelay: `${Math.random() * 2}s`
+                              }}
+                            ></div>
+                          ))}
+                        </div>
+                        <div className="relative z-10">
+                          <div className="text-xs font-bold opacity-90">Main Hall</div>
+                          <div className="text-2xl font-bold">892</div>
+                          <div className="text-xs opacity-90 flex items-center space-x-1">
+                            <TrendingUp className="w-3 h-3" />
+                            <span>Very High Traffic</span>
+                          </div>
+                        </div>
                       </div>
-                      <div className="w-full bg-gray-200 rounded-full h-3">
-                        <div className="bg-gradient-to-r from-blue-500 to-blue-600 h-3 rounded-full" style={{width: '98%'}}></div>
+
+                      <div className="grid grid-cols-2 gap-3">
+                        {/* Room A - Medium Traffic */}
+                        <div className="relative bg-gradient-to-r from-amber-400 to-yellow-500 rounded-lg p-3 text-white overflow-hidden">
+                          <div className="absolute inset-0 opacity-20">
+                            {[...Array(8)].map((_, i) => (
+                              <div
+                                key={i}
+                                className="absolute w-2 h-2 bg-white rounded-full animate-pulse"
+                                style={{
+                                  left: `${Math.random() * 100}%`,
+                                  top: `${Math.random() * 100}%`,
+                                  animationDelay: `${Math.random() * 2}s`
+                                }}
+                              ></div>
+                            ))}
+                          </div>
+                          <div className="relative z-10">
+                            <div className="text-xs font-bold opacity-90">Room A</div>
+                            <div className="text-xl font-bold">234</div>
+                            <div className="text-xs opacity-90">Active</div>
+                          </div>
+                        </div>
+
+                        {/* Expo Hall - Medium Traffic */}
+                        <div className="relative bg-gradient-to-r from-green-400 to-emerald-500 rounded-lg p-3 text-white overflow-hidden">
+                          <div className="absolute inset-0 opacity-20">
+                            {[...Array(6)].map((_, i) => (
+                              <div
+                                key={i}
+                                className="absolute w-2 h-2 bg-white rounded-full animate-pulse"
+                                style={{
+                                  left: `${Math.random() * 100}%`,
+                                  top: `${Math.random() * 100}%`,
+                                  animationDelay: `${Math.random() * 2}s`
+                                }}
+                              ></div>
+                            ))}
+                          </div>
+                          <div className="relative z-10">
+                            <div className="text-xs font-bold opacity-90">Expo Hall</div>
+                            <div className="text-xl font-bold">156</div>
+                            <div className="text-xs opacity-90 flex items-center space-x-1">
+                              <CheckCircle2 className="w-3 h-3" />
+                              <span>Steady</span>
+                            </div>
+                          </div>
+                        </div>
                       </div>
-                      <div className="text-xs text-gray-500 mt-1">456 attendees • Main Hall</div>
+
+                      {/* Room B - Low Traffic */}
+                      <div className="bg-gray-300 rounded-lg p-3 text-gray-700">
+                        <div className="text-xs font-bold">Room B</div>
+                        <div className="text-xl font-bold">0</div>
+                        <div className="text-xs">Empty • Next: 2:00 PM</div>
+                      </div>
                     </div>
-                    <div>
-                      <div className="flex justify-between text-sm mb-1">
-                        <span className="text-gray-700 font-medium">ML Workshop</span>
-                        <span className="text-emerald-600 font-bold">87%</span>
+
+                    <div className="mt-3 pt-3 border-t border-indigo-200">
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="text-gray-600 font-medium">Peak Movement:</span>
+                        <span className="font-bold text-indigo-700">Main Hall → Expo (127/min)</span>
                       </div>
-                      <div className="w-full bg-gray-200 rounded-full h-3">
-                        <div className="bg-gradient-to-r from-emerald-500 to-emerald-600 h-3 rounded-full" style={{width: '87%'}}></div>
-                      </div>
-                      <div className="text-xs text-gray-500 mt-1">234 attendees • Room A</div>
-                    </div>
-                    <div>
-                      <div className="flex justify-between text-sm mb-1">
-                        <span className="text-gray-700 font-medium">Keynote Q&A</span>
-                        <span className="text-purple-600 font-bold">92%</span>
-                      </div>
-                      <div className="w-full bg-gray-200 rounded-full h-3">
-                        <div className="bg-gradient-to-r from-purple-500 to-purple-600 h-3 rounded-full" style={{width: '92%'}}></div>
-                      </div>
-                      <div className="text-xs text-gray-500 mt-1">892 attendees • Main Stage</div>
                     </div>
                   </div>
                 </div>
