@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, Suspense } from 'react'
+import { useState, useEffect, Suspense, useRef } from 'react'
 import Link from 'next/link'
 import dynamic from 'next/dynamic'
 import { 
@@ -84,6 +84,7 @@ export default function MissionControlDashboard() {
   ])
   const [chatInput, setChatInput] = useState('')
   const [isSendingMessage, setIsSendingMessage] = useState(false)
+  const chatContainerRef = useRef<HTMLDivElement>(null)
   
   // Sparkline data (last 6 hours trend)
   const attendanceTrend = [720, 745, 780, 820, 865, 892]
@@ -270,6 +271,13 @@ export default function MissionControlDashboard() {
     }
   }
 
+  // Auto-scroll chat to bottom when new messages arrive
+  useEffect(() => {
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight
+    }
+  }, [chatMessages])
+
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 1000)
     return () => clearInterval(timer)
@@ -290,6 +298,106 @@ export default function MissionControlDashboard() {
           <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
           <h2 className="text-2xl font-bold text-gray-900 mb-2">Loading EventOS...</h2>
           <p className="text-gray-600">Preparing your event command center</p>
+        </div>
+      </div>
+    )
+  }
+
+  // Show empty state if no events
+  if (events.length === 0) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/40 relative overflow-hidden">
+        {/* Background patterns */}
+        <div className="absolute inset-0 opacity-40">
+          <div className="absolute inset-0" style={{
+            backgroundImage: `
+              radial-gradient(circle at 30% 20%, rgba(59, 130, 246, 0.15) 0%, transparent 50%),
+              radial-gradient(circle at 80% 80%, rgba(99, 102, 241, 0.12) 0%, transparent 50%),
+              radial-gradient(circle at 50% 50%, rgba(16, 185, 129, 0.08) 0%, transparent 70%)
+            `
+          }}></div>
+        </div>
+        
+        {/* Header */}
+        <nav className="absolute top-0 left-0 right-0 z-50 bg-white border-b border-gray-200 shadow-sm">
+          <div className="max-w-full mx-auto px-6 py-3">
+            <div className="flex justify-between items-center">
+              <Link href="/" className="flex items-center space-x-2">
+                <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+                  <Zap className="w-5 h-5 text-white" />
+                </div>
+                <span className="text-xl font-bold text-gray-900">EventOS</span>
+              </Link>
+              <button className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white text-sm font-bold">
+                KD
+              </button>
+            </div>
+          </div>
+        </nav>
+
+        {/* Empty State Content */}
+        <div className="pt-20 flex items-center justify-center min-h-screen p-8">
+          <div className="max-w-4xl w-full text-center">
+            {/* Icon */}
+            <div className="mb-8">
+              <div className="w-24 h-24 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-3xl flex items-center justify-center mx-auto shadow-2xl shadow-blue-500/30">
+                <Sparkles className="w-12 h-12 text-white animate-pulse" />
+              </div>
+            </div>
+
+            {/* Title */}
+            <h1 className="text-5xl font-bold text-gray-900 mb-4">
+              Welcome to EventOS
+            </h1>
+            <p className="text-xl text-gray-600 mb-12 max-w-2xl mx-auto">
+              Your AI-powered event coordination platform. Replace 10+ tools with one intelligent system.
+            </p>
+
+            {/* Quick Action Buttons */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl mx-auto mb-12">
+              <Link 
+                href="/dashboard/event-architect"
+                className="group bg-gradient-to-br from-blue-600 to-indigo-700 text-white rounded-2xl p-8 hover:shadow-2xl hover:shadow-blue-500/30 transition-all duration-300 hover:scale-105"
+              >
+                <Sparkles className="w-12 h-12 mx-auto mb-4 group-hover:animate-pulse" />
+                <h3 className="text-2xl font-bold mb-2">Create with AI</h3>
+                <p className="text-blue-100">Let AI plan your perfect event in minutes</p>
+              </Link>
+
+              <button 
+                onClick={() => setEvents(mockEvents)}
+                className="group bg-white border-2 border-gray-200 rounded-2xl p-8 hover:shadow-2xl hover:border-blue-500 transition-all duration-300 hover:scale-105"
+              >
+                <Plus className="w-12 h-12 mx-auto mb-4 text-gray-600 group-hover:text-blue-600" />
+                <h3 className="text-2xl font-bold text-gray-900 mb-2">Start from Template</h3>
+                <p className="text-gray-600">Choose from pre-built event templates</p>
+              </button>
+            </div>
+
+            {/* Features List */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto text-left">
+              <div className="bg-white/80 backdrop-blur-lg rounded-xl p-4 border border-gray-200">
+                <Users className="w-6 h-6 text-blue-600 mb-2" />
+                <h4 className="font-semibold text-gray-900 text-sm mb-1">People Management</h4>
+                <p className="text-xs text-gray-600">Track attendees, speakers & staff</p>
+              </div>
+              <div className="bg-white/80 backdrop-blur-lg rounded-xl p-4 border border-gray-200">
+                <Building2 className="w-6 h-6 text-emerald-600 mb-2" />
+                <h4 className="font-semibold text-gray-900 text-sm mb-1">Vendor Coordination</h4>
+                <p className="text-xs text-gray-600">Automate supplier management</p>
+              </div>
+              <div className="bg-white/80 backdrop-blur-lg rounded-xl p-4 border border-gray-200">
+                <BarChart3 className="w-6 h-6 text-purple-600 mb-2" />
+                <h4 className="font-semibold text-gray-900 text-sm mb-1">Real-time Analytics</h4>
+                <p className="text-xs text-gray-600">Live insights & predictions</p>
+              </div>
+              <div className="bg-white/80 backdrop-blur-lg rounded-xl p-4 border border-gray-200">
+                <MessageSquare className="w-6 h-6 text-amber-600 mb-2" />
+                <h4 className="font-semibold text-gray-900 text-sm mb-1">AI Assistant</h4>
+                <p className="text-xs text-gray-600">24/7 intelligent support</p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     )
@@ -392,26 +500,35 @@ export default function MissionControlDashboard() {
           <div className="w-96 bg-white/95 backdrop-blur-lg border-r border-blue-200 shadow-xl shadow-blue-500/10 flex flex-col h-screen">
             {/* AI Copilot Header */}
             <div className="p-6 border-b border-blue-100 bg-gradient-to-r from-blue-50 to-emerald-50">
-              <div className="flex items-center space-x-3 mb-3">
-                <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-blue-700 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/25">
-                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center space-x-3">
+                  <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-blue-700 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/25">
+                    <Sparkles className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-bold text-blue-800">AI Event Copilot</h3>
+                    <p className="text-sm text-blue-600">Your AI event assistant</p>
+                  </div>
+                </div>
+                <button 
+                  onClick={() => setAiCopilotOpen(false)}
+                  className="text-gray-400 hover:text-gray-600 transition-colors"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                   </svg>
-                </div>
-                <div>
-                  <h3 className="text-lg font-bold text-blue-800">AI Event Copilot</h3>
-                  <p className="text-sm text-blue-600">Replacing your entire event planning team</p>
-                </div>
+                </button>
               </div>
-              <div className="bg-blue-100 rounded-lg p-3">
+              <div className="bg-blue-100 rounded-lg p-3 flex items-start space-x-2">
+                <Target className="w-4 h-4 text-blue-700 flex-shrink-0 mt-0.5" />
                 <p className="text-xs text-blue-700 font-medium">
-                  💡 I've analyzed 1,247+ similar events to optimize your {currentEvent.name}
+                  Analyzing {currentEvent.name} • Trained on 10,000+ successful events
                 </p>
-        </div>
-        </div>
+              </div>
+            </div>
 
             {/* AI Chat Messages */}
-            <div className="flex-1 overflow-y-auto p-6 space-y-4">
+            <div ref={chatContainerRef} className="flex-1 overflow-y-auto p-6 space-y-4">
               {chatMessages.map((msg, idx) => (
                 <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                   <div className={`max-w-[80%] rounded-xl p-3 ${

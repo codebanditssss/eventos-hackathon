@@ -3,37 +3,37 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { signIn } from '@/lib/auth'
-import { supabase } from '@/lib/supabase'
+import { signUp } from '@/lib/auth'
 import SetupBanner from '@/components/SetupBanner'
 
-export default function LoginPage() {
+export default function SignupPage() {
+  const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [role, setRole] = useState('organizer')
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    e.stopPropagation()
-    
     setIsLoading(true)
     setError(null)
-
+    
     try {
       // Simple validation
-      if (!email || !password) {
-        throw new Error('Please enter both email and password')
+      if (!name || !email || !password) {
+        throw new Error('Please fill in all fields')
       }
 
-      // Store user info in localStorage (simple auth)
+      // Store user info in localStorage
       const user = {
         id: 'user-' + Date.now(),
         email: email,
-        name: email.split('@')[0],
+        name: name,
+        role: role,
         isAuthenticated: true,
-        loginTime: new Date().toISOString()
+        signupTime: new Date().toISOString()
       }
 
       localStorage.setItem('eventos-user', JSON.stringify(user))
@@ -41,7 +41,7 @@ export default function LoginPage() {
       // Set cookie for middleware
       document.cookie = 'eventos-auth=true; path=/; max-age=86400' // 1 day
 
-      console.log('✅ Login successful!')
+      console.log('✅ Signup successful!')
 
       // Small delay for visual feedback
       await new Promise(resolve => setTimeout(resolve, 500))
@@ -64,19 +64,36 @@ export default function LoginPage() {
           <h1 className="text-2xl font-bold text-blue-600">EventOS</h1>
         </div>
         <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-          Sign in to your account
+          Create your account
         </h2>
         <p className="mt-2 text-center text-sm text-gray-600">
           Or{' '}
-          <Link href="/auth/signup" className="font-medium text-blue-600 hover:text-blue-500">
-            create a new account
+          <Link href="/auth/login" className="font-medium text-blue-600 hover:text-blue-500">
+            sign in to existing account
           </Link>
         </p>
       </div>
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
-          <form className="space-y-6" onSubmit={handleSubmit} method="POST" action="#">
+          <form className="space-y-6" onSubmit={handleSubmit}>
+            <div>
+              <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+                Full Name
+              </label>
+              <div className="mt-1">
+                <input
+                  id="name"
+                  name="name"
+                  type="text"
+                  required
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                  placeholder="Enter your full name"
+                />
+              </div>
+            </div>
 
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700">
@@ -106,12 +123,34 @@ export default function LoginPage() {
                   id="password"
                   name="password"
                   type="password"
-                  autoComplete="current-password"
+                  autoComplete="new-password"
+                  required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                  placeholder="Enter your password"
+                  placeholder="Create a password"
                 />
+              </div>
+            </div>
+
+            <div>
+              <label htmlFor="role" className="block text-sm font-medium text-gray-700">
+                I am a...
+              </label>
+              <div className="mt-1">
+                <select
+                  id="role"
+                  name="role"
+                  value={role}
+                  onChange={(e) => setRole(e.target.value)}
+                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                >
+                  <option value="organizer">Event Organizer</option>
+                  <option value="attendee">Attendee</option>
+                  <option value="vendor">Vendor</option>
+                  <option value="sponsor">Sponsor</option>
+                  <option value="volunteer">Volunteer</option>
+                </select>
               </div>
             </div>
 
@@ -121,33 +160,13 @@ export default function LoginPage() {
               </div>
             )}
 
-            <div className="flex items-center justify-between">
-              <div className="flex items-center">
-                <input
-                  id="remember-me"
-                  name="remember-me"
-                  type="checkbox"
-                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                />
-                <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-900">
-                  Remember me
-                </label>
-              </div>
-
-              <div className="text-sm">
-                <a href="#" className="font-medium text-blue-600 hover:text-blue-500">
-                  Forgot your password?
-                </a>
-              </div>
-            </div>
-
             <div>
               <button
                 type="submit"
                 disabled={isLoading}
                 className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {isLoading ? 'Signing in...' : 'Sign in'}
+                {isLoading ? 'Creating account...' : 'Sign up'}
               </button>
             </div>
           </form>
@@ -187,3 +206,4 @@ export default function LoginPage() {
     </>
   )
 }
+
