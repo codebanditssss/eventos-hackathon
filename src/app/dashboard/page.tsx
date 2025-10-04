@@ -56,11 +56,27 @@ const Sparkline = ({ data, color = "emerald" }: { data: number[], color?: string
   )
 }
 
+interface AIInsight {
+  id: string
+  type: 'critical' | 'opportunity' | 'prediction' | 'info'
+  title: string
+  message: string
+  actions: {
+    label: string
+    type: 'primary' | 'secondary' | 'danger'
+  }[]
+  priority: number
+}
+
 export default function MissionControlDashboard() {
   const [currentTime, setCurrentTime] = useState(new Date())
   const [selectedEvent, setSelectedEvent] = useState(0)
   const [aiCopilotOpen, setAiCopilotOpen] = useState(false)
   const [dataFlow, setDataFlow] = useState(0)
+  const [events, setEvents] = useState<any[]>([])
+  const [aiInsights, setAiInsights] = useState<AIInsight[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [isLoadingInsights, setIsLoadingInsights] = useState(false)
   
   // Sparkline data (last 6 hours trend)
   const attendanceTrend = [720, 745, 780, 820, 865, 892]
@@ -68,8 +84,8 @@ export default function MissionControlDashboard() {
   const engagementTrend = [75, 78, 82, 85, 87, 87]
   const progressTrend = [45, 50, 55, 60, 63, 65]
 
-  // EventOS-specific event data with real event management context
-  const events = [
+  // Mock events as fallback (will be replaced by API data)
+  const mockEvents = [
     {
       id: 1,
       name: "Tech Summit 2025",
@@ -123,7 +139,77 @@ export default function MissionControlDashboard() {
     }
   ]
 
-  const currentEvent = events[selectedEvent]
+  // Fetch events from API
+  useEffect(() => {
+    const fetchEvents = async () => {
+      try {
+        setIsLoading(true)
+        // For demo, using hardcoded user ID - replace with actual auth
+        const userId = '00000000-0000-0000-0000-000000000000'
+        const response = await fetch(`/api/events?userId=${userId}`)
+        const data = await response.json()
+        
+        if (data.events && data.events.length > 0) {
+          setEvents(data.events)
+        } else {
+          // Use mock data if no events found
+          setEvents(mockEvents)
+        }
+      } catch (error) {
+        console.error('Failed to fetch events:', error)
+        // Fallback to mock data
+        setEvents(mockEvents)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchEvents()
+  }, [])
+
+  // Fetch AI insights when event changes
+  useEffect(() => {
+    const fetchInsights = async () => {
+      if (events.length === 0) return
+      
+      try {
+        setIsLoadingInsights(true)
+        const currentEvent = events[selectedEvent]
+        
+        const response = await fetch('/api/ai/insights', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            eventData: {
+              name: currentEvent.name,
+              type: currentEvent.type,
+              attendees: currentEvent.attendees,
+              vendors: currentEvent.vendors,
+              sessions: currentEvent.sessions,
+              progress: currentEvent.progress,
+              urgentTasks: currentEvent.urgentTasks
+            }
+          })
+        })
+        
+        const data = await response.json()
+        if (data.insights) {
+          setAiInsights(data.insights)
+        }
+      } catch (error) {
+        console.error('Failed to fetch AI insights:', error)
+        // Keep existing insights or use empty array
+      } finally {
+        setIsLoadingInsights(false)
+      }
+    }
+
+    // Fetch insights after a short delay to avoid too many API calls
+    const timer = setTimeout(fetchInsights, 500)
+    return () => clearTimeout(timer)
+  }, [selectedEvent, events])
+
+  const currentEvent = events[selectedEvent] || mockEvents[0]
 
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 1000)
@@ -136,6 +222,19 @@ export default function MissionControlDashboard() {
     }, 100)
     return () => clearInterval(dataFlowTimer)
   }, [])
+
+  // Show loading state
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/40 relative overflow-hidden flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">Loading EventOS...</h2>
+          <p className="text-gray-600">Preparing your event command center</p>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/40 relative overflow-hidden">
@@ -539,19 +638,66 @@ export default function MissionControlDashboard() {
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center space-x-2">
                     <div className="w-8 h-8 bg-white/20 backdrop-blur-lg rounded-lg flex items-center justify-center">
-                      <Sparkles className="w-5 h-5 text-white animate-pulse" />
+                      <Sparkles className={`w-5 h-5 text-white ${isLoadingInsights ? 'animate-spin' : 'animate-pulse'}`} />
                     </div>
                     <div>
                       <h3 className="text-lg font-bold">AI Insights</h3>
-                      <p className="text-xs text-purple-200">Powered by EventOS AI</p>
+                      <p className="text-xs text-purple-200">
+                        {isLoadingInsights ? 'Analyzing...' : 'Powered by EventOS AI'}
+                      </p>
                     </div>
                   </div>
                   <div className="bg-white/10 backdrop-blur-lg px-3 py-1 rounded-full text-xs font-bold border border-white/20">
-                    3 New
-                        </div>
-                      </div>
+                    {aiInsights.length || 3} New
+                  </div>
+                </div>
                 
                 <div className="space-y-2">
+                  {isLoadingInsights ? (
+                    <div className="text-center py-8">
+                      <div className="animate-spin w-8 h-8 border-4 border-white/30 border-t-white rounded-full mx-auto"></div>
+                      <p className="text-sm text-purple-200 mt-2">Generating AI insights...</p>
+                    </div>
+                  ) : aiInsights.length > 0 ? (
+                    aiInsights.map((insight) => (
+                      <div key={insight.id} className="bg-white/10 backdrop-blur-lg rounded-xl p-3 border border-white/20 hover:bg-white/20 transition-all cursor-pointer group">
+                        <div className="flex items-start space-x-3">
+                          <div className={`w-2 h-2 rounded-full mt-2 ${
+                            insight.type === 'critical' ? 'bg-red-400 animate-pulse' :
+                            insight.type === 'opportunity' ? 'bg-emerald-400' :
+                            insight.type === 'prediction' ? 'bg-blue-400' :
+                            'bg-yellow-400'
+                          }`}></div>
+                          <div className="flex-1">
+                            <div className="flex items-center justify-between mb-1">
+                              <span className="text-sm font-bold">{insight.title}</span>
+                              {insight.type === 'critical' && <AlertCircle className="w-4 h-4 text-red-300" />}
+                              {insight.type === 'opportunity' && <TrendingUp className="w-4 h-4 text-emerald-300" />}
+                              {insight.type === 'prediction' && <Target className="w-4 h-4 text-blue-300" />}
+                            </div>
+                            <p className="text-sm text-purple-100">{insight.message}</p>
+                            {insight.actions && insight.actions.length > 0 && (
+                              <div className="flex items-center space-x-2 mt-2">
+                                {insight.actions.map((action, idx) => (
+                                  <button
+                                    key={idx}
+                                    className={`text-xs px-3 py-1 rounded-lg font-semibold transition-colors ${
+                                      action.type === 'danger' ? 'bg-red-500 hover:bg-red-600' :
+                                      action.type === 'primary' ? 'bg-emerald-500 hover:bg-emerald-600' :
+                                      'bg-white/20 hover:bg-white/30'
+                                    }`}
+                                  >
+                                    {action.label}
+                                  </button>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="space-y-2">
                   {/* Insight 1 - Critical */}
                   <div className="bg-white/10 backdrop-blur-lg rounded-xl p-3 border border-white/20 hover:bg-white/20 transition-all cursor-pointer group">
                     <div className="flex items-start space-x-3">
@@ -592,8 +738,8 @@ export default function MissionControlDashboard() {
                           Extend Session
                         </button>
                       </div>
-                        </div>
-                      </div>
+                    </div>
+                  </div>
 
                   {/* Insight 3 - Info */}
                   <div className="bg-white/10 backdrop-blur-lg rounded-xl p-3 border border-white/20 hover:bg-white/20 transition-all cursor-pointer group">
@@ -613,6 +759,8 @@ export default function MissionControlDashboard() {
                       </div>
                     </div>
                   </div>
+                    </div>
+                  )}
                 </div>
               </div>
 

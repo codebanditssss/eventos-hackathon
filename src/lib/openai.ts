@@ -1,75 +1,165 @@
 import OpenAI from 'openai'
 
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
+  apiKey: process.env.OPENAI_API_KEY!
 })
 
-export default openai
-
-// AI Event Planning Functions
-export const generateEventPlan = async (eventDetails: {
+export interface EventData {
   name: string
   type: string
-  attendees: number
-  duration: string
-  budget?: number
-  location?: string
-}) => {
-  const prompt = `
-    Create a comprehensive event plan for:
-    - Event Name: ${eventDetails.name}
-    - Type: ${eventDetails.type}
-    - Expected Attendees: ${eventDetails.attendees}
-    - Duration: ${eventDetails.duration}
-    ${eventDetails.budget ? `- Budget: $${eventDetails.budget}` : ''}
-    ${eventDetails.location ? `- Location: ${eventDetails.location}` : ''}
+  attendees: {
+    registered: number
+    checkedIn: number
+    vip: number
+  }
+  vendors: {
+    total: number
+    active: number
+    pending: number
+  }
+  sessions: {
+    total: number
+    live: number
+    upcoming: number
+  }
+  progress: number
+  urgentTasks: number
+}
 
-    Please provide:
-    1. Detailed timeline/schedule
-    2. Budget breakdown (if budget provided)
-    3. Vendor checklist
-    4. Task assignments
-    5. Risk mitigation strategies
-  `
+export interface AIInsight {
+  id: string
+  type: 'critical' | 'opportunity' | 'prediction' | 'info'
+  title: string
+  message: string
+  actions: {
+    label: string
+    type: 'primary' | 'secondary' | 'danger'
+  }[]
+  priority: number
+}
 
+export async function generateAIInsights(eventData: EventData): Promise<AIInsight[]> {
   try {
-    const completion = await openai.chat.completions.create({
-      model: "gpt-3.5-turbo",
-      messages: [{ role: "user", content: prompt }],
+    const prompt = `You are an AI assistant for EventOS, an event management platform. Analyze this event data and provide 3 actionable insights:
+
+Event: ${eventData.name} (${eventData.type})
+- Registered: ${eventData.attendees.registered} | Checked In: ${eventData.attendees.checkedIn}
+- Live Sessions: ${eventData.sessions.live} | Upcoming: ${eventData.sessions.upcoming}
+- Active Vendors: ${eventData.vendors.active} | Pending: ${eventData.vendors.pending}
+- Progress: ${eventData.progress}%
+- Urgent Tasks: ${eventData.urgentTasks}
+
+Provide exactly 3 insights in this JSON format:
+[
+  {
+    "type": "critical" | "opportunity" | "prediction" | "info",
+    "title": "Short title (2-4 words)",
+    "message": "Detailed actionable insight (1-2 sentences)",
+    "actions": [{"label": "Action text", "type": "primary" | "secondary" | "danger"}]
+  }
+]
+
+Focus on:
+1. Critical issues that need immediate attention
+2. Opportunities to improve the event
+3. Predictions based on current trends
+
+Return ONLY the JSON array, no other text.`
+
+    const response = await openai.chat.completions.create({
+      model: 'gpt-4-turbo-preview',
+      messages: [
+        {
+          role: 'system',
+          content: 'You are an expert event management AI that provides actionable insights. Always respond with valid JSON only.'
+        },
+        {
+          role: 'user',
+          content: prompt
+        }
+      ],
       temperature: 0.7,
+      max_tokens: 800
     })
 
-    return completion.choices[0]?.message?.content || 'Failed to generate event plan'
+    const content = response.choices[0].message.content
+    if (!content) {
+      throw new Error('No content in OpenAI response')
+    }
+
+    const insights = JSON.parse(content)
+    
+    // Add IDs and priority
+    return insights.map((insight: any, index: number) => ({
+      id: `insight-${Date.now()}-${index}`,
+      ...insight,
+      priority: index + 1
+    }))
   } catch (error) {
-    console.error('Error generating event plan:', error)
-    throw new Error('Failed to generate event plan')
+    console.error('Error generating AI insights:', error)
+    
+    // Return fallback insights if API fails
+    return [
+      {
+        id: 'fallback-1',
+        type: 'critical',
+        title: 'Check-in Rate',
+        message: `Currently ${Math.round((eventData.attendees.checkedIn / eventData.attendees.registered) * 100)}% checked in. Monitor for any delays.`,
+        actions: [{ label: 'View Details', type: 'primary' }],
+        priority: 1
+      },
+      {
+        id: 'fallback-2',
+        type: 'info',
+        title: 'Session Status',
+        message: `${eventData.sessions.live} sessions currently live with ${eventData.sessions.upcoming} upcoming.`,
+        actions: [{ label: 'View Schedule', type: 'secondary' }],
+        priority: 2
+      },
+      {
+        id: 'fallback-3',
+        type: 'opportunity',
+        title: 'Event Progress',
+        message: `Event is ${eventData.progress}% complete and on track to finish successfully.`,
+        actions: [{ label: 'View Progress', type: 'primary' }],
+        priority: 3
+      }
+    ]
   }
 }
 
-export const summarizeFeedback = async (feedback: string[]) => {
-  const prompt = `
-    Summarize the following event feedback and provide actionable insights:
-    
-    ${feedback.join('\n\n')}
-    
-    Please provide:
-    1. Overall sentiment (positive/negative/neutral)
-    2. Key themes and patterns
-    3. Top 3 areas for improvement
-    4. Top 3 strengths to maintain
-    5. Specific recommendations for future events
-  `
-
+export async function generateEventDescription(eventDetails: {
+  type: string
+  duration: string
+  attendees: string
+  goals: string
+}): Promise<string> {
   try {
-    const completion = await openai.chat.completions.create({
-      model: "gpt-3.5-turbo",
-      messages: [{ role: "user", content: prompt }],
-      temperature: 0.5,
+    const response = await openai.chat.completions.create({
+      model: 'gpt-3.5-turbo',
+      messages: [
+        {
+          role: 'system',
+          content: 'You are an event planning assistant. Generate professional event descriptions.'
+        },
+        {
+          role: 'user',
+          content: `Generate a concise event description for:
+Type: ${eventDetails.type}
+Duration: ${eventDetails.duration}
+Expected Attendees: ${eventDetails.attendees}
+Goals: ${eventDetails.goals}
+
+Keep it under 3 sentences.`
+        }
+      ],
+      temperature: 0.8,
+      max_tokens: 150
     })
 
-    return completion.choices[0]?.message?.content || 'Failed to summarize feedback'
+    return response.choices[0].message.content || 'Professional event hosted via EventOS platform.'
   } catch (error) {
-    console.error('Error summarizing feedback:', error)
-    throw new Error('Failed to summarize feedback')
+    console.error('Error generating description:', error)
+    return `${eventDetails.type} event for ${eventDetails.attendees} attendees. ${eventDetails.goals}`
   }
 }
