@@ -155,167 +155,22 @@ export default function LandingPage() {
         {/* Dashboard Screenshot Preview */}
         <div className="max-w-6xl mx-auto mt-20">
           <div className="relative group">
-            {/* Frame/Border with gradient */}
+            {/* Frame/Border with gradient glow */}
             <div className="absolute -inset-4 bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-600 rounded-3xl blur-2xl opacity-30 group-hover:opacity-50 transition-opacity"></div>
             
             {/* Screenshot Container */}
-            <div className="relative bg-white rounded-2xl shadow-2xl border-8 border-gray-200 overflow-hidden transform group-hover:scale-[1.02] transition-all duration-500">
-              {/* Browser Chrome */}
-              <div className="bg-gray-100 px-4 py-3 flex items-center space-x-2 border-b border-gray-300">
-                <div className="flex space-x-2">
-                  <div className="w-3 h-3 rounded-full bg-red-400"></div>
-                  <div className="w-3 h-3 rounded-full bg-yellow-400"></div>
-                  <div className="w-3 h-3 rounded-full bg-green-400"></div>
-                </div>
-                <div className="flex-1 mx-4">
-                  <div className="bg-white rounded-lg px-4 py-1.5 text-sm text-gray-600 flex items-center space-x-2">
-                    <svg className="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                    </svg>
-                    <span className="text-xs">eventos.com/dashboard</span>
-                  </div>
+            <div className="relative rounded-2xl shadow-2xl overflow-hidden transform group-hover:scale-[1.02] transition-all duration-500">
+              <img 
+                src="/image.png" 
+                alt="EventOS Mission Control Dashboard" 
+                className="w-full h-full object-contain rounded-2xl"
+              />
+            </div>
           </div>
         </div>
-
-              {/* Dashboard Screenshot */}
-              <div className="bg-gradient-to-br from-slate-100 to-blue-100 aspect-video flex items-center justify-center relative overflow-hidden">
-                <img 
-                  src="/image.png" 
-                  alt="EventOS Mission Control Dashboard" 
-                  className="w-full h-full object-cover"
-                />
-              </div>
-            </div>
-            </div>
-          
-          <p className="text-center text-gray-500 mt-6 text-lg">
-            Experience the future of event management
-            </p>
-          </div>
       </section>
 
-      {/* PROBLEM SECTION - Revolutionary Diagonal Layout */}
-      <section className="relative z-10 py-32 overflow-hidden">
-        <div className="max-w-7xl mx-auto px-6 lg:px-8">
-          {/* Section Header */}
-          <div className="text-center mb-20">
-            <div className="inline-flex items-center space-x-2 px-6 py-3 rounded-full bg-red-100 backdrop-blur-xl border border-red-300 mb-8">
-              <AlertCircle className="w-5 h-5 text-red-600 animate-pulse" />
-              <span className="text-red-700 font-semibold">The $2.3 Billion Problem</span>
-            </div>
-            <h2 className="text-6xl md:text-7xl font-black text-gray-900 mb-6">
-              Event Planning is <span className="text-red-600">Broken</span>
-            </h2>
-            <p className="text-2xl text-gray-600 max-w-3xl mx-auto">
-              45% of events fail due to poor coordination. Are you next?
-            </p>
-          </div>
 
-          {/* Innovative Diagonal/Overlapping Cards */}
-          <div className="relative h-[800px] md:h-[600px]">
-            {/* Card 1 - Large, Top Left */}
-            <div 
-              className="absolute top-0 left-0 md:left-[5%] w-full md:w-[45%] h-64 md:h-80 p-8 rounded-[3rem] bg-gradient-to-br from-red-100 to-orange-100 backdrop-blur-2xl border border-red-300 transform hover:scale-105 hover:rotate-1 transition-all duration-500 group cursor-pointer shadow-xl"
-              style={{
-                transform: `translateY(${scrollY * 0.05}px) rotate(-2deg)`
-              }}
-            >
-              <div className="absolute inset-0 bg-gradient-to-r from-red-500 to-orange-500 opacity-0 group-hover:opacity-10 rounded-[3rem] blur-2xl transition-opacity"></div>
-              <div className="relative h-full flex flex-col justify-between">
-                <div className="flex items-start justify-between">
-                  <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-red-500 to-orange-500 flex items-center justify-center shadow-2xl group-hover:scale-110 transition-transform">
-                    <Target className="w-10 h-10 text-white" />
-                  </div>
-                  <div className="text-right">
-                    <div className="text-7xl font-black text-gray-300 group-hover:text-gray-400 transition-colors">01</div>
-                  </div>
-                </div>
-                <div>
-                  <div className="text-8xl font-black bg-gradient-to-r from-red-600 to-orange-600 bg-clip-text text-transparent mb-4">
-                    10+
-                  </div>
-                  <h3 className="text-3xl font-black text-gray-900 mb-2">Tool Overload</h3>
-                  <p className="text-gray-700 text-lg">Switching between platforms kills 20hrs/week</p>
-                </div>
-            </div>
-          </div>
-
-            {/* Card 2 - Medium, Center Right */}
-            <div 
-              className="absolute top-32 md:top-20 right-0 md:right-[8%] w-full md:w-[42%] h-72 md:h-96 p-8 rounded-[3rem] bg-gradient-to-br from-orange-100 to-yellow-100 backdrop-blur-2xl border border-orange-300 transform hover:scale-105 hover:-rotate-1 transition-all duration-500 group cursor-pointer z-10 shadow-xl"
-              style={{
-                transform: `translateY(${scrollY * -0.03}px) rotate(3deg)`
-              }}
-            >
-              <div className="absolute inset-0 bg-gradient-to-r from-orange-500 to-yellow-500 opacity-0 group-hover:opacity-10 rounded-[3rem] blur-2xl transition-opacity"></div>
-              <div className="relative h-full flex flex-col justify-between">
-                <div className="flex items-start justify-between">
-                  <div className="text-left">
-                    <div className="text-7xl font-black text-gray-300 group-hover:text-gray-400 transition-colors">02</div>
-                  </div>
-                  <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-orange-500 to-yellow-500 flex items-center justify-center shadow-2xl group-hover:scale-110 transition-transform">
-                    <AlertCircle className="w-10 h-10 text-white" />
-                  </div>
-                </div>
-                <div>
-                  <div className="text-8xl font-black bg-gradient-to-r from-orange-600 to-yellow-600 bg-clip-text text-transparent mb-4">
-                    65%
-                  </div>
-                  <h3 className="text-3xl font-black text-gray-900 mb-2">Data Chaos</h3>
-                  <p className="text-gray-700 text-lg">Critical info scattered across 10+ platforms</p>
-                </div>
-            </div>
-          </div>
-
-            {/* Card 3 - Large, Bottom Center/Left */}
-            <div 
-              className="absolute bottom-0 left-0 md:left-[15%] w-full md:w-[50%] h-64 md:h-80 p-8 rounded-[3rem] bg-gradient-to-br from-yellow-100 to-amber-100 backdrop-blur-2xl border border-yellow-300 transform hover:scale-105 hover:rotate-2 transition-all duration-500 group cursor-pointer z-20 shadow-xl"
-              style={{
-                transform: `translateY(${scrollY * 0.02}px) rotate(-3deg)`
-              }}
-            >
-              <div className="absolute inset-0 bg-gradient-to-r from-yellow-500 to-amber-500 opacity-0 group-hover:opacity-10 rounded-[3rem] blur-2xl transition-opacity"></div>
-              <div className="relative h-full flex flex-col justify-between">
-                <div className="flex items-start justify-between">
-                  <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-yellow-500 to-amber-500 flex items-center justify-center shadow-2xl group-hover:scale-110 transition-transform">
-                    <Clock className="w-10 h-10 text-white" />
-                  </div>
-                  <div className="text-right">
-                    <div className="text-7xl font-black text-gray-300 group-hover:text-gray-400 transition-colors">03</div>
-                  </div>
-                </div>
-                <div>
-                  <div className="text-8xl font-black bg-gradient-to-r from-yellow-600 to-amber-600 bg-clip-text text-transparent mb-4">
-                    30hrs
-                  </div>
-                  <h3 className="text-3xl font-black text-gray-900 mb-2">Manual Hell</h3>
-                  <p className="text-gray-700 text-lg">Wasted on copy-paste and status updates</p>
-                </div>
-            </div>
-          </div>
-
-            {/* Connecting Lines Animation */}
-            <svg className="absolute inset-0 w-full h-full pointer-events-none opacity-20" style={{ zIndex: 5 }}>
-              <line x1="20%" y1="30%" x2="75%" y2="40%" stroke="url(#gradient1)" strokeWidth="2" strokeDasharray="5,5">
-                <animate attributeName="stroke-dashoffset" from="0" to="10" dur="1s" repeatCount="indefinite" />
-              </line>
-              <line x1="75%" y1="60%" x2="35%" y2="85%" stroke="url(#gradient2)" strokeWidth="2" strokeDasharray="5,5">
-                <animate attributeName="stroke-dashoffset" from="0" to="10" dur="1.5s" repeatCount="indefinite" />
-              </line>
-              <defs>
-                <linearGradient id="gradient1" x1="0%" y1="0%" x2="100%" y2="0%">
-                  <stop offset="0%" stopColor="#ef4444" />
-                  <stop offset="100%" stopColor="#f59e0b" />
-                </linearGradient>
-                <linearGradient id="gradient2" x1="0%" y1="0%" x2="100%" y2="0%">
-                  <stop offset="0%" stopColor="#f59e0b" />
-                  <stop offset="100%" stopColor="#fbbf24" />
-                </linearGradient>
-              </defs>
-              </svg>
-            </div>
-        </div>
-      </section>
 
       {/* SOLUTION - Bento Grid Style Features */}
       <section className="relative z-10 py-32">
@@ -362,10 +217,10 @@ export default function LandingPage() {
             <div className="col-span-12 md:col-span-5 group relative p-8 rounded-[3rem] bg-gradient-to-br from-cyan-100 to-blue-100 backdrop-blur-xl border border-cyan-300 hover:border-cyan-400 transition-all hover:scale-[1.02] cursor-pointer shadow-xl">
               <div className="w-16 h-16 rounded-3xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center shadow-2xl mb-6 group-hover:scale-110 transition-transform">
                 <Users className="w-8 h-8 text-white" />
-              </div>
+            </div>
               <h3 className="text-3xl font-black text-gray-900 mb-3">3D People Universe</h3>
               <p className="text-gray-700 text-lg">Interactive attendee constellation with AI networking</p>
-            </div>
+          </div>
 
             {/* Medium Feature */}
             <div className="col-span-12 md:col-span-5 group relative p-8 rounded-[3rem] bg-gradient-to-br from-emerald-100 to-teal-100 backdrop-blur-xl border border-emerald-300 hover:border-emerald-400 transition-all hover:scale-[1.02] cursor-pointer shadow-xl">
