@@ -99,16 +99,20 @@ export default function MissionControlDashboard() {
   }, [])
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-emerald-50 relative overflow-hidden">
-      {/* Subtle Background Pattern */}
-      <div className="absolute inset-0 opacity-30">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/40 relative overflow-hidden">
+      {/* Modern Mesh Gradient Background */}
+      <div className="absolute inset-0 opacity-40">
         <div className="absolute inset-0" style={{
           backgroundImage: `
-            radial-gradient(circle at 25% 25%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
-            radial-gradient(circle at 75% 75%, rgba(16, 185, 129, 0.1) 0%, transparent 50%)
+            radial-gradient(circle at 30% 20%, rgba(59, 130, 246, 0.15) 0%, transparent 50%),
+            radial-gradient(circle at 80% 80%, rgba(99, 102, 241, 0.12) 0%, transparent 50%),
+            radial-gradient(circle at 50% 50%, rgba(16, 185, 129, 0.08) 0%, transparent 70%)
           `
         }}></div>
       </div>
+      
+      {/* Subtle Grid Pattern */}
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:32px_32px]"></div>
 
       {/* Simplified Professional Header */}
       <nav className="absolute top-0 left-0 right-0 z-50 bg-white border-b border-gray-200 shadow-sm">
@@ -158,9 +162,9 @@ export default function MissionControlDashboard() {
                   <div className="flex items-center space-x-1.5 text-amber-600">
                     <AlertCircle className="w-4 h-4" />
                     <span className="font-semibold">{currentEvent.urgentTasks}</span>
-                  </div>
+            </div>
                 )}
-              </div>
+                  </div>
               
               {/* Quick Actions */}
               <button 
@@ -177,14 +181,14 @@ export default function MissionControlDashboard() {
               
               <button className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white text-sm font-bold hover:bg-blue-700 transition-colors">
                 KD
-              </button>
+                </button>
             </div>
           </div>
         </div>
       </nav>
 
       {/* Main Mission Control Interface */}
-      <div className="pt-14 h-screen flex">
+      <div className="pt-14 min-h-screen flex overflow-y-auto">
         
         {/* Enhanced AI Copilot Sidebar */}
         {aiCopilotOpen && (
@@ -301,14 +305,41 @@ export default function MissionControlDashboard() {
         )}
 
         {/* Enhanced Central Command Interface */}
-        <div className="flex-1 relative p-8">
-          <div className="h-full grid grid-cols-12 gap-6">
+        <div className="flex-1 relative p-4 md:p-6 lg:p-8 overflow-y-auto">
+          
+          {/* Welcome Banner with Event Countdown */}
+          <div className="mb-6 bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-700 rounded-2xl p-4 md:p-6 text-white shadow-2xl">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-2xl font-bold mb-1">
+                  Welcome back, Khushi!
+                </h2>
+                <p className="text-blue-100">Your event command center is ready • {currentTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</p>
+              </div>
+              <div className="text-right bg-white/10 backdrop-blur-lg rounded-xl px-6 py-4 border border-white/20">
+                <div className="text-sm text-blue-100 mb-1">Event Starts In</div>
+                <div className="text-4xl font-bold">
+                  {currentEvent.daysUntil === 0 ? (
+                    <span className="flex items-center space-x-2">
+                      <Activity className="w-8 h-8 animate-pulse" />
+                      <span>LIVE NOW</span>
+                    </span>
+                  ) : (
+                    <span>{currentEvent.daysUntil} Days</span>
+                  )}
+                      </div>
+                <div className="text-xs text-blue-200 mt-1">{currentEvent.date}</div>
+                    </div>
+                  </div>
+                </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 md:gap-6 pb-8">
             
             {/* Left Column - Quick Stats & Dashboard Navigation */}
-            <div className="col-span-3 space-y-6">
+            <div className="lg:col-span-3 space-y-4 md:space-y-6">
               
               {/* EventOS Dashboard Navigation */}
-              <div className="bg-white/80 backdrop-blur-lg border border-blue-200 rounded-2xl p-6 shadow-xl shadow-blue-500/10">
+              <div className="bg-white/90 backdrop-blur-xl border border-blue-100 rounded-2xl p-6 shadow-2xl shadow-blue-500/20">
                 <h3 className="text-lg font-bold text-blue-800 mb-4">EventOS Dashboards</h3>
                 <div className="space-y-3">
                   <button className="w-full flex items-center space-x-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white px-4 py-3 rounded-xl shadow-lg shadow-blue-500/25">
@@ -380,12 +411,61 @@ export default function MissionControlDashboard() {
                       <div className="text-xs opacity-70">Schedule</div>
                     </div>
                   </Link>
+                        </div>
+                      </div>
+
+              {/* Mini Venue Map */}
+              <div className="bg-white/90 backdrop-blur-xl border border-indigo-100 rounded-2xl p-6 shadow-2xl shadow-indigo-500/15">
+                <h3 className="text-lg font-bold text-indigo-800 mb-4 flex items-center space-x-2">
+                  <MapPin className="w-5 h-5" />
+                  <span>Venue Status</span>
+                </h3>
+                <div className="space-y-3">
+                  {/* Mini Floor Plan */}
+                  <div className="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-xl p-4 border border-indigo-200">
+                    <div className="grid grid-cols-2 gap-2 mb-3">
+                      {/* Main Hall */}
+                      <div className="bg-emerald-500 text-white rounded-lg p-3 text-center relative overflow-hidden">
+                        <div className="absolute inset-0 bg-emerald-600 opacity-50 animate-pulse"></div>
+                        <div className="relative z-10">
+                          <div className="text-xs font-bold">Main Hall</div>
+                          <div className="text-lg font-bold">892</div>
+                          <div className="text-xs">Live Now</div>
+                        </div>
+                      </div>
+                      {/* Room A */}
+                      <div className="bg-blue-500 text-white rounded-lg p-3 text-center">
+                        <div className="text-xs font-bold">Room A</div>
+                        <div className="text-lg font-bold">234</div>
+                        <div className="text-xs">Active</div>
+                      </div>
+                      {/* Room B */}
+                      <div className="bg-gray-300 text-gray-700 rounded-lg p-3 text-center">
+                        <div className="text-xs font-bold">Room B</div>
+                        <div className="text-lg font-bold">0</div>
+                        <div className="text-xs">Empty</div>
+                      </div>
+                      {/* Expo Hall */}
+                      <div className="bg-purple-500 text-white rounded-lg p-3 text-center">
+                        <div className="text-xs font-bold">Expo Hall</div>
+                        <div className="text-lg font-bold">156</div>
+                        <div className="text-xs">Networking</div>
+                        </div>
+                      </div>
+                    <div className="text-xs text-center text-indigo-700 font-medium">
+                      <Building2 className="w-3 h-3 inline mr-1" />
+                      {currentEvent.venue}
+                      </div>
+                    </div>
                   </div>
                 </div>
 
               {/* Quick Event Stats */}
-              <div className="bg-white/80 backdrop-blur-lg border border-emerald-200 rounded-2xl p-6 shadow-xl shadow-emerald-500/10">
-                <h3 className="text-lg font-bold text-emerald-800 mb-4">Live Event Stats</h3>
+              <div className="bg-white/90 backdrop-blur-xl border border-emerald-100 rounded-2xl p-6 shadow-2xl shadow-emerald-500/15">
+                <h3 className="text-lg font-bold text-emerald-800 mb-4 flex items-center space-x-2">
+                  <Activity className="w-5 h-5" />
+                  <span>Live Event Stats</span>
+                </h3>
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-gray-600">Check-in Progress</span>
@@ -413,11 +493,11 @@ export default function MissionControlDashboard() {
               </div>
 
             {/* Center Column - Event Command Center */}
-            <div className="col-span-6 space-y-4">
+            <div className="lg:col-span-6 space-y-4">
               
               {/* Top Metrics Row */}
-              <div className="grid grid-cols-4 gap-4">
-                <div className="bg-white rounded-xl p-4 border border-gray-200 shadow-sm">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
+                <div className="bg-white rounded-xl p-4 border border-gray-100 shadow-lg hover:shadow-xl transition-shadow duration-300">
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-sm text-gray-600">Attendance</span>
                     <span className="text-emerald-600">↑ 12%</span>
@@ -429,7 +509,7 @@ export default function MissionControlDashboard() {
                   </div>
                 </div>
 
-                <div className="bg-white rounded-xl p-4 border border-gray-200 shadow-sm">
+                <div className="bg-white rounded-xl p-4 border border-gray-100 shadow-lg hover:shadow-xl transition-shadow duration-300">
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-sm text-gray-600">Live Sessions</span>
                     <span className="text-blue-600">● Active</span>
@@ -446,7 +526,7 @@ export default function MissionControlDashboard() {
                   </div>
                 </div>
 
-                <div className="bg-white rounded-xl p-4 border border-gray-200 shadow-sm">
+                <div className="bg-white rounded-xl p-4 border border-gray-100 shadow-lg hover:shadow-xl transition-shadow duration-300">
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-sm text-gray-600">Engagement</span>
                     <span className="text-purple-600">87%</span>
@@ -460,7 +540,7 @@ export default function MissionControlDashboard() {
                   </div>
                 </div>
 
-                <div className="bg-white rounded-xl p-4 border border-gray-200 shadow-sm">
+                <div className="bg-white rounded-xl p-4 border border-gray-100 shadow-lg hover:shadow-xl transition-shadow duration-300">
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-sm text-gray-600">Progress</span>
                     <span className="text-amber-600">{currentEvent.progress}%</span>
@@ -479,9 +559,9 @@ export default function MissionControlDashboard() {
               </div>
 
               {/* Main Charts Section */}
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* Session Engagement Chart */}
-                <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
+                <div className="bg-white rounded-xl p-6 border border-gray-100 shadow-lg hover:shadow-xl transition-shadow duration-300">
                   <h3 className="text-lg font-semibold text-gray-900 mb-4">Session Engagement (Live)</h3>
                   <div className="space-y-3">
                     <div>
@@ -518,7 +598,7 @@ export default function MissionControlDashboard() {
                 </div>
 
                 {/* Sponsor Impressions */}
-                <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
+                <div className="bg-white rounded-xl p-6 border border-gray-100 shadow-lg hover:shadow-xl transition-shadow duration-300">
                   <h3 className="text-lg font-semibold text-gray-900 mb-4">Sponsor Impressions (Today)</h3>
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
@@ -526,7 +606,7 @@ export default function MissionControlDashboard() {
                         <div className="w-10 h-10 bg-gradient-to-r from-amber-500 to-amber-600 rounded-lg flex items-center justify-center text-white font-bold">
                           TC
                         </div>
-                        <div>
+                      <div>
                           <div className="font-semibold text-gray-900">TechCorp</div>
                           <div className="text-xs text-gray-500">Platinum Sponsor</div>
                         </div>
@@ -542,7 +622,7 @@ export default function MissionControlDashboard() {
                         <div className="w-10 h-10 bg-gradient-to-r from-yellow-500 to-yellow-600 rounded-lg flex items-center justify-center text-white font-bold">
                           IL
                         </div>
-                        <div>
+                      <div>
                           <div className="font-semibold text-gray-900">InnovateLabs</div>
                           <div className="text-xs text-gray-500">Gold Sponsor</div>
                         </div>
@@ -558,7 +638,7 @@ export default function MissionControlDashboard() {
                         <div className="w-10 h-10 bg-gradient-to-r from-gray-400 to-gray-500 rounded-lg flex items-center justify-center text-white font-bold">
                           SH
                         </div>
-                        <div>
+                      <div>
                           <div className="font-semibold text-gray-900">StartupHub</div>
                           <div className="text-xs text-gray-500">Silver Sponsor</div>
                         </div>
@@ -572,10 +652,10 @@ export default function MissionControlDashboard() {
                     <div className="pt-2 border-t border-gray-200">
                       <div className="text-sm text-gray-600">Total Impressions</div>
                       <div className="text-2xl font-bold text-gray-900">16,304</div>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
 
               {/* Event Selector */}
               <div className="flex items-center justify-center space-x-2">
@@ -596,10 +676,10 @@ export default function MissionControlDashboard() {
             </div>
 
             {/* Right Column - Live Updates & Actions */}
-            <div className="col-span-3 space-y-6">
+            <div className="lg:col-span-3 space-y-4 md:space-y-6">
               
               {/* Urgent Tasks */}
-              <div className="bg-white/80 backdrop-blur-lg border border-amber-200 rounded-2xl p-6 shadow-xl shadow-amber-500/10">
+              <div className="bg-white/90 backdrop-blur-xl border border-amber-100 rounded-2xl p-6 shadow-2xl shadow-amber-500/15">
                 <div className="flex items-center space-x-2 mb-4">
                   <div className="w-3 h-3 bg-amber-500 rounded-full animate-pulse"></div>
                   <h3 className="text-lg font-bold text-amber-800">Urgent Tasks</h3>
@@ -626,7 +706,7 @@ export default function MissionControlDashboard() {
             </div>
 
               {/* Quick Actions */}
-              <div className="bg-white/80 backdrop-blur-lg border border-blue-200 rounded-2xl p-6 shadow-xl shadow-blue-500/10">
+              <div className="bg-white/90 backdrop-blur-xl border border-blue-100 rounded-2xl p-6 shadow-2xl shadow-blue-500/15">
                 <h3 className="text-lg font-bold text-blue-800 mb-4">Quick Actions</h3>
                 <div className="space-y-3">
                   <button className="w-full flex items-center space-x-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white px-4 py-3 rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all">
@@ -650,9 +730,73 @@ export default function MissionControlDashboard() {
               </div>
             </div>
 
+              {/* Today's Session Timeline */}
+              <div className="bg-white/90 backdrop-blur-xl border border-indigo-100 rounded-2xl p-6 shadow-2xl shadow-indigo-500/15">
+                <h3 className="text-lg font-bold text-indigo-800 mb-4 flex items-center space-x-2">
+                  <Clock className="w-5 h-5" />
+                  <span>Today's Timeline</span>
+                </h3>
+                <div className="space-y-3">
+                  {/* Current Time Indicator */}
+                  <div className="flex items-center space-x-2 text-sm font-bold text-indigo-600">
+                    <div className="w-2 h-2 bg-indigo-600 rounded-full animate-pulse"></div>
+                    <span>Now: {currentTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</span>
+                  </div>
+
+                  {/* Timeline Items */}
+                  <div className="relative space-y-4 pl-4 border-l-2 border-indigo-200">
+                    {/* Past Session */}
+                    <div className="relative">
+                      <div className="absolute -left-[21px] w-4 h-4 bg-gray-400 rounded-full border-2 border-white"></div>
+                      <div className="bg-gray-50 rounded-lg p-3">
+                        <div className="text-xs text-gray-500 font-medium">08:00 - 09:00</div>
+                        <div className="text-sm font-semibold text-gray-700">Registration</div>
+                        <div className="text-xs text-gray-500 mt-1">✓ Completed</div>
+              </div>
+            </div>
+
+                    {/* Current Session */}
+                    <div className="relative">
+                      <div className="absolute -left-[21px] w-4 h-4 bg-emerald-500 rounded-full border-2 border-white animate-pulse"></div>
+                      <div className="bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-lg p-3 border border-emerald-200">
+                        <div className="text-xs text-emerald-700 font-bold">09:00 - 10:00 • LIVE</div>
+                        <div className="text-sm font-bold text-emerald-900">Opening Keynote</div>
+                        <div className="text-xs text-emerald-700 mt-1 flex items-center space-x-1">
+                          <Users className="w-3 h-3" />
+                          <span>892 attendees</span>
+                        </div>
+              </div>
+            </div>
+
+                    {/* Next Session */}
+                    <div className="relative">
+                      <div className="absolute -left-[21px] w-4 h-4 bg-blue-500 rounded-full border-2 border-white"></div>
+                      <div className="bg-blue-50 rounded-lg p-3 border border-blue-200">
+                        <div className="text-xs text-blue-600 font-medium">10:30 - 11:30 • Next</div>
+                        <div className="text-sm font-semibold text-blue-900">AI Workshop</div>
+                        <div className="text-xs text-blue-600 mt-1">Room A</div>
+              </div>
+            </div>
+
+                    {/* Upcoming */}
+                    <div className="relative">
+                      <div className="absolute -left-[21px] w-4 h-4 bg-purple-400 rounded-full border-2 border-white"></div>
+                      <div className="bg-purple-50 rounded-lg p-3">
+                        <div className="text-xs text-purple-600 font-medium">14:00 - 15:30</div>
+                        <div className="text-sm font-semibold text-purple-900">Panel Discussion</div>
+                        <div className="text-xs text-purple-600 mt-1">Main Stage</div>
+                      </div>
+                    </div>
+                  </div>
+              </div>
+            </div>
+
               {/* Live Feed */}
-              <div className="bg-white/80 backdrop-blur-lg border border-emerald-200 rounded-2xl p-6 shadow-xl shadow-emerald-500/10">
-                <h3 className="text-lg font-bold text-emerald-800 mb-4">Live Activity</h3>
+              <div className="bg-white/90 backdrop-blur-xl border border-emerald-100 rounded-2xl p-6 shadow-2xl shadow-emerald-500/15">
+                <h3 className="text-lg font-bold text-emerald-800 mb-4 flex items-center space-x-2">
+                  <Activity className="w-5 h-5" />
+                  <span>Live Activity</span>
+                </h3>
                 <div className="space-y-3 text-sm">
                   <div className="flex items-start space-x-3">
                     <div className="w-2 h-2 bg-emerald-500 rounded-full mt-2 animate-pulse"></div>
