@@ -5,21 +5,12 @@ const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholde
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || 'placeholder-service-key'
 
 // Client for client-side operations
-const getRedirectTo = () => {
-  if (typeof window === 'undefined') return undefined
-  // Handle both development and production URLs
-  const baseUrl = window.location.origin
-  return `${baseUrl}/auth/callback`
-}
-
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
     flowType: 'pkce',
     autoRefreshToken: true,
     detectSessionInUrl: true,
     persistSession: true,
-    redirectTo: getRedirectTo(),
-    // Disable built-in auth UI
     storageKey: 'eventos-auth',
     storage: typeof window !== 'undefined' ? window.localStorage : undefined
   }

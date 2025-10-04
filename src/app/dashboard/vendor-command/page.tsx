@@ -87,7 +87,7 @@ export default function VendorCommandDashboard() {
     pending: 3,
     totalBudget: 45000,
     paid: 28000,
-    pending: 17000
+    pendingPayment: 17000
   }
 
   const getStatusColor = (status: string) => {
@@ -471,7 +471,7 @@ export default function VendorCommandDashboard() {
                 </div>
                 <div className="bg-white/80 backdrop-blur-lg border border-amber-200 rounded-2xl p-6 shadow-lg">
                   <p className="text-sm text-gray-600 mb-2">Pending</p>
-                  <p className="text-3xl font-bold text-amber-700">${stats.pending.toLocaleString()}</p>
+                  <p className="text-3xl font-bold text-amber-700">${stats.pendingPayment.toLocaleString()}</p>
                 </div>
               </div>
 
