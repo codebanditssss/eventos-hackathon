@@ -77,6 +77,7 @@ export default function MissionControlDashboard() {
   const [aiInsights, setAiInsights] = useState<AIInsight[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [isLoadingInsights, setIsLoadingInsights] = useState(false)
+  const [showProfileMenu, setShowProfileMenu] = useState(false)
   
   // AI Copilot state
   const [chatMessages, setChatMessages] = useState<Array<{role: 'user' | 'assistant', content: string}>>([
@@ -91,6 +92,13 @@ export default function MissionControlDashboard() {
   const sessionTrend = [1, 2, 2, 3, 3, 3]
   const engagementTrend = [75, 78, 82, 85, 87, 87]
   const progressTrend = [45, 50, 55, 60, 63, 65]
+
+  // Logout function
+  const handleLogout = () => {
+    localStorage.removeItem('eventos-user')
+    document.cookie = 'eventos-auth=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT'
+    window.location.href = '/'
+  }
 
   // Mock events as fallback (will be replaced by API data)
   const mockEvents = [
@@ -305,7 +313,7 @@ export default function MissionControlDashboard() {
 
   // Show empty state if no events
   if (events.length === 0) {
-    return (
+  return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/40 relative overflow-hidden">
         {/* Background patterns */}
         <div className="absolute inset-0 opacity-40">
@@ -414,7 +422,7 @@ export default function MissionControlDashboard() {
             radial-gradient(circle at 50% 50%, rgba(16, 185, 129, 0.08) 0%, transparent 70%)
           `
         }}></div>
-      </div>
+            </div>
       
       {/* Subtle Grid Pattern */}
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:32px_32px]"></div>
@@ -484,9 +492,36 @@ export default function MissionControlDashboard() {
                 <span>AI Copilot</span>
               </button>
               
-              <button className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white text-sm font-bold hover:bg-blue-700 transition-colors">
-                KD
+              <div className="relative">
+                <button 
+                  onClick={() => setShowProfileMenu(!showProfileMenu)}
+                  className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white text-sm font-bold hover:bg-blue-700 transition-colors"
+                >
+                  KD
                 </button>
+                
+                {/* Profile Dropdown */}
+                {showProfileMenu && (
+                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl border border-gray-200 py-2 z-50">
+                    <div className="px-4 py-2 border-b border-gray-100">
+                      <p className="text-sm font-semibold text-gray-900">Khushi Diwan</p>
+                      <p className="text-xs text-gray-500">Event Organizer</p>
+                  </div>
+                    <Link href="/dashboard" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                      Dashboard
+                    </Link>
+                    <Link href="/settings" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                      Settings
+                    </Link>
+                    <button 
+                      onClick={handleLogout}
+                      className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 font-medium"
+                    >
+                      Logout
+                </button>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>
@@ -529,17 +564,28 @@ export default function MissionControlDashboard() {
 
             {/* AI Chat Messages */}
             <div ref={chatContainerRef} className="flex-1 overflow-y-auto p-6 space-y-4">
-              {chatMessages.map((msg, idx) => (
-                <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                  <div className={`max-w-[80%] rounded-xl p-3 ${
-                    msg.role === 'user' 
-                      ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white' 
-                      : 'bg-gray-100 text-gray-800'
-                  }`}>
-                    <p className="text-sm">{msg.content}</p>
+              {chatMessages.map((msg, idx) => {
+                // Strip markdown formatting
+                const cleanContent = msg.content
+                  .replace(/\*\*/g, '')  // Remove bold **
+                  .replace(/\*/g, '')    // Remove italic *
+                  .replace(/#{1,6}\s/g, '') // Remove headers #
+                  .replace(/`{1,3}/g, '') // Remove code blocks ```
+                  .replace(/\[([^\]]+)\]\([^\)]+\)/g, '$1') // Convert links [text](url) to text
+                  .replace(/^[\-\*]\s/gm, '• ') // Convert list markers to bullets
+                
+                return (
+                  <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                    <div className={`max-w-[80%] rounded-xl p-3 ${
+                      msg.role === 'user' 
+                        ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white' 
+                        : 'bg-gray-100 text-gray-800'
+                    }`}>
+                      <p className="text-sm whitespace-pre-line">{cleanContent}</p>
+                    </div>
                   </div>
-                </div>
-              ))}
+                )
+              })}
               
               {isSendingMessage && (
                 <div className="flex justify-start">
@@ -552,7 +598,7 @@ export default function MissionControlDashboard() {
                   </div>
                 </div>
               )}
-            </div>
+        </div>
 
             {/* AI Chat Input */}
             <div className="border-t border-blue-100 p-6 bg-gradient-to-r from-blue-50/50 to-emerald-50/50">
@@ -571,7 +617,7 @@ export default function MissionControlDashboard() {
                   placeholder="Ask me anything about your event..."
                   className="w-full bg-white border border-blue-200 rounded-xl px-4 py-3 pr-12 text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm shadow-sm disabled:opacity-50"
                 />
-                <button 
+              <button
                   onClick={handleSendMessage}
                   disabled={isSendingMessage || !chatInput.trim()}
                   className="absolute right-2 top-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white p-2 rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
@@ -742,8 +788,8 @@ export default function MissionControlDashboard() {
                       {currentEvent.venue}
                       </div>
                     </div>
-                  </div>
-                </div>
+                        </div>
+                      </div>
 
               {/* Quick Event Stats */}
               <div className="bg-white/90 backdrop-blur-xl border border-emerald-100 rounded-2xl p-6 shadow-2xl shadow-emerald-500/15">
@@ -772,10 +818,10 @@ export default function MissionControlDashboard() {
                       <div className="text-2xl font-bold text-purple-700">{currentEvent.vendors.active}</div>
                       <div className="text-xs text-gray-600">Active Vendors</div>
                       </div>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
 
             {/* Center Column - Event Command Center */}
             <div className="lg:col-span-6 space-y-4">
@@ -1020,8 +1066,8 @@ export default function MissionControlDashboard() {
                             <div className="text-xs font-bold opacity-90">Room A</div>
                             <div className="text-xl font-bold">234</div>
                             <div className="text-xs opacity-90">Active</div>
-                          </div>
                         </div>
+                      </div>
 
                         {/* Expo Hall - Medium Traffic */}
                         <div className="relative bg-gradient-to-r from-green-400 to-emerald-500 rounded-lg p-3 text-white overflow-hidden">
@@ -1044,27 +1090,27 @@ export default function MissionControlDashboard() {
                             <div className="text-xs opacity-90 flex items-center space-x-1">
                               <CheckCircle2 className="w-3 h-3" />
                               <span>Steady</span>
-                            </div>
-                          </div>
-                        </div>
                       </div>
+                    </div>
+                  </div>
+                </div>
 
                       {/* Room B - Low Traffic */}
                       <div className="bg-gray-300 rounded-lg p-3 text-gray-700">
                         <div className="text-xs font-bold">Room B</div>
                         <div className="text-xl font-bold">0</div>
                         <div className="text-xs">Empty • Next: 2:00 PM</div>
+                        </div>
                       </div>
-                    </div>
 
                     <div className="mt-3 pt-3 border-t border-indigo-200">
                       <div className="flex items-center justify-between text-xs">
                         <span className="text-gray-600 font-medium">Peak Movement:</span>
                         <span className="font-bold text-indigo-700">Main Hall → Expo (127/min)</span>
-                      </div>
                     </div>
                   </div>
                 </div>
+              </div>
 
                 {/* Sponsor Impressions */}
                 <div className="bg-white rounded-xl p-6 border border-gray-100 shadow-lg hover:shadow-xl transition-shadow duration-300">

@@ -71,12 +71,8 @@ export default function OnboardingPage() {
       localStorage.setItem('eventos-user', JSON.stringify(updatedUser))
     }
     
-    // Redirect based on role
-    if (userRole === 'organizer') {
-      window.location.href = '/dashboard/event-architect'
-    } else {
-      window.location.href = '/dashboard'
-    }
+    // Always redirect to main dashboard
+    window.location.href = '/dashboard'
   }
 
   const totalSteps = userRole === 'organizer' ? 4 : 3
@@ -128,18 +124,18 @@ export default function OnboardingPage() {
 
           {/* Progress Bar */}
           <div className="mb-8">
-            <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center justify-center mb-2">
               {Array.from({ length: totalSteps }).map((_, index) => (
-                <div key={index} className="flex items-center flex-1">
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                <div key={index} className="flex items-center">
+                  <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold transition-all ${
                     step > index + 1 ? 'bg-blue-600 text-white' :
                     step === index + 1 ? 'bg-blue-600 text-white' :
                     'bg-gray-300 text-gray-600'
                   }`}>
-                    {step > index + 1 ? <CheckCircle2 className="w-5 h-5" /> : index + 1}
+                    {step > index + 1 ? <CheckCircle2 className="w-6 h-6" /> : index + 1}
                   </div>
                   {index < totalSteps - 1 && (
-                    <div className={`flex-1 h-1 mx-2 ${
+                    <div className={`w-24 h-1 mx-1 transition-all ${
                       step > index + 1 ? 'bg-blue-600' : 'bg-gray-300'
                     }`}></div>
                   )}

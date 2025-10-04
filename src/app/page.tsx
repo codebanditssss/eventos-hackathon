@@ -2,46 +2,104 @@
 
 import Link from 'next/link'
 import { 
-  Zap, ArrowRight, CheckCircle2, Sparkles, Users, 
+  Zap, ArrowRight, Sparkles, Users, 
   Building2, BarChart3, MessageSquare, Calendar, Target,
-  Rocket, Star
+  AlertCircle, Clock, ChevronRight, Brain, Network
 } from 'lucide-react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 
 export default function LandingPage() {
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
+  const [scrollY, setScrollY] = useState(0)
+  const heroRef = useRef<HTMLDivElement>(null)
+
+  const handleMouseMove = useCallback((event: MouseEvent) => {
+    if (heroRef.current) {
+      const rect = heroRef.current.getBoundingClientRect()
+      setMousePosition({
+        x: event.clientX - rect.left,
+        y: event.clientY - rect.top,
+      })
+    }
+  }, [])
+
+  const handleScroll = useCallback(() => {
+    setScrollY(window.scrollY)
+  }, [])
+
+  useEffect(() => {
+    window.addEventListener('mousemove', handleMouseMove)
+    window.addEventListener('scroll', handleScroll)
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove)
+      window.removeEventListener('scroll', handleScroll)
+    }
+  }, [handleMouseMove, handleScroll])
+
+  const particles = Array.from({ length: 20 }).map((_, i) => ({
+    id: i,
+    x: Math.random() * 100,
+    y: Math.random() * 100,
+    size: Math.random() * 3 + 1,
+    animationDuration: Math.random() * 10 + 5,
+    animationDelay: Math.random() * 5,
+  }))
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/40 relative overflow-hidden">
-      {/* Background patterns */}
-      <div className="absolute inset-0 opacity-40">
-        <div className="absolute inset-0" style={{
-          backgroundImage: `
-            radial-gradient(circle at 30% 20%, rgba(59, 130, 246, 0.15) 0%, transparent 50%),
-            radial-gradient(circle at 80% 80%, rgba(99, 102, 241, 0.12) 0%, transparent 50%),
-            radial-gradient(circle at 50% 50%, rgba(16, 185, 129, 0.08) 0%, transparent 70%)
-          `
-        }}></div>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/40 text-gray-900 relative overflow-hidden font-sans">
+      {/* Animated Background Blobs */}
+      <div className="absolute inset-0 z-0 overflow-hidden">
+        <div 
+          className="absolute w-[600px] h-[600px] rounded-full bg-blue-400/20 blur-3xl animate-blob-1"
+          style={{ top: '10%', left: '10%', transform: `translate(${mousePosition.x * 0.02}px, ${mousePosition.y * 0.02}px)` }}
+        ></div>
+        <div 
+          className="absolute w-[700px] h-[700px] rounded-full bg-indigo-400/15 blur-3xl animate-blob-2"
+          style={{ bottom: '15%', right: '10%', transform: `translate(${mousePosition.x * -0.03}px, ${mousePosition.y * -0.03}px)` }}
+        ></div>
+        <div 
+          className="absolute w-[500px] h-[500px] rounded-full bg-cyan-400/15 blur-3xl animate-blob-3"
+          style={{ top: '50%', left: '50%', transform: `translate(${mousePosition.x * 0.01}px, ${mousePosition.y * 0.01}px)` }}
+        ></div>
+        {/* Floating Particles */}
+        {particles.map(p => (
+          <div
+            key={p.id}
+            className="absolute rounded-full bg-blue-400 opacity-30 animate-pulse-slow"
+            style={{
+              width: p.size,
+              height: p.size,
+              left: `${p.x}%`,
+              top: `${p.y}%`,
+              animationDuration: `${p.animationDuration}s`,
+              animationDelay: `${p.animationDelay}s`,
+              transform: `translate(${mousePosition.x * 0.01 * (p.id % 2 === 0 ? 1 : -1)}px, ${mousePosition.y * 0.01 * (p.id % 3 === 0 ? 1 : -1)}px)`
+            }}
+          ></div>
+        ))}
       </div>
 
       {/* Navigation */}
-      <nav className="relative z-10 border-b border-gray-200 bg-white/80 backdrop-blur-lg">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center space-x-2">
-              <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/30">
-                <Zap className="w-6 h-6 text-white" />
-              </div>
-              <span className="text-2xl font-bold text-gray-900">EventOS</span>
+      <nav className="sticky top-0 z-50 border-b border-gray-200/50 bg-white/80 backdrop-blur-lg">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8 py-4">
+          <div className="flex justify-between items-center">
+            <Link href="/" className="flex items-center space-x-3">
+              <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/30">
+                <Zap className="w-7 h-7 text-white" />
             </div>
+              <span className="text-3xl font-extrabold text-gray-900">EventOS</span>
+            </Link>
             
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-6">
               <Link 
                 href="/auth/login"
-                className="px-4 py-2 text-gray-700 hover:text-gray-900 font-medium transition-colors"
+                className="px-5 py-2 text-gray-700 hover:text-gray-900 font-medium transition-colors text-lg"
               >
                 Log in
               </Link>
               <Link 
                 href="/auth/signup"
-                className="px-6 py-2 bg-gradient-to-r from-blue-600 to-indigo-700 text-white rounded-lg font-semibold hover:from-blue-700 hover:to-indigo-800 transition-all shadow-lg shadow-blue-500/30"
+                className="px-8 py-3 bg-gradient-to-r from-blue-600 to-indigo-700 text-white rounded-xl font-bold text-lg hover:from-blue-700 hover:to-indigo-800 transition-all shadow-lg shadow-blue-500/30"
               >
                 Sign up free
               </Link>
@@ -51,184 +109,391 @@ export default function LandingPage() {
       </nav>
 
       {/* Hero Section */}
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-16">
-        <div className="text-center">
-          {/* Badge */}
-          <div className="inline-flex items-center space-x-2 bg-blue-100 text-blue-700 px-4 py-2 rounded-full text-sm font-semibold mb-6">
-            <Sparkles className="w-4 h-4" />
-            <span>AI-Powered Event Management</span>
-          </div>
+      <section ref={heroRef} className="relative z-10 max-w-7xl mx-auto px-6 lg:px-8 pt-16 pb-20 text-center">
+        {/* Floating Badge */}
+        <div className="inline-flex items-center space-x-3 px-8 py-3 rounded-full bg-white/80 backdrop-blur-xl border border-blue-200 text-lg font-semibold text-blue-700 mb-10 transform hover:scale-105 transition-transform duration-300 cursor-pointer group shadow-lg shadow-blue-500/20">
+          <Sparkles className="w-6 h-6 text-blue-600 animate-pulse" />
+          <span>AI-Powered Event Management <ChevronRight className="w-5 h-5 inline ml-2 group-hover:translate-x-1 transition-transform" /></span>
+        </div>
 
-          {/* Headline */}
-          <h1 className="text-6xl md:text-7xl font-bold text-gray-900 mb-6 leading-tight">
-            Replace <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-700">10+ Tools</span>
-            <br />with One AI Platform
+        {/* Headline */}
+        <h1 className="text-8xl md:text-9xl font-black mb-8 leading-tight tracking-tighter">
+          <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent animate-gradient-shift">
+            Transform
+          </span> Your Events
+          <br />with <span className="bg-gradient-to-r from-indigo-600 to-blue-600 bg-clip-text text-transparent animate-gradient-shift-delay">EventOS AI</span>
           </h1>
 
-          {/* Subheadline */}
-          <p className="text-xl md:text-2xl text-gray-600 mb-8 max-w-3xl mx-auto">
-            EventOS eliminates event coordination chaos. Plan, manage, and optimize events with AI-powered insights and automation.
-          </p>
+        {/* Subheadline */}
+        <p className="text-3xl text-gray-600 mb-12 max-w-4xl mx-auto leading-relaxed">
+          Replace 10+ fragmented tools with one intelligent platform. Plan, manage, and optimize events like never before.
+        </p>
 
-          {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-4 mb-12">
-            <Link 
-              href="/auth/signup"
-              className="w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-700 text-white rounded-xl font-bold text-lg hover:from-blue-700 hover:to-indigo-800 transition-all shadow-2xl shadow-blue-500/30 flex items-center justify-center space-x-2"
-            >
-              <span>Start for Free</span>
-              <ArrowRight className="w-5 h-5" />
-            </Link>
-            <Link 
-              href="/dashboard"
-              className="w-full sm:w-auto px-8 py-4 bg-white text-gray-900 rounded-xl font-bold text-lg hover:bg-gray-50 transition-all border-2 border-gray-200 hover:border-blue-500 flex items-center justify-center space-x-2"
-            >
-              <span>View Demo</span>
-              <Rocket className="w-5 h-5" />
-            </Link>
-          </div>
-
-          {/* Social Proof */}
-          <div className="flex items-center justify-center space-x-6 text-sm text-gray-600">
-            <div className="flex items-center space-x-1">
-              <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
-              <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
-              <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
-              <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
-              <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
-              <span className="ml-2">Trusted by organizers</span>
-            </div>
-            <div className="hidden sm:block">•</div>
-            <div className="hidden sm:block">10,000+ events powered</div>
-          </div>
-        </div>
-      </div>
-
-      {/* Problem Statement */}
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="bg-amber-50 border-2 border-amber-200 rounded-2xl p-8">
-          <div className="text-center mb-6">
-            <h2 className="text-3xl font-bold text-gray-900 mb-3">The Event Coordination Crisis</h2>
-            <p className="text-lg text-gray-700">
-              <strong>45% of event failures</strong> are due to planning and coordination breakdowns.
-            </p>
-          </div>
-          <div className="grid md:grid-cols-3 gap-6">
-            <div className="bg-white rounded-xl p-6 border border-amber-200">
-              <div className="text-4xl mb-3">😫</div>
-              <h3 className="font-bold text-gray-900 mb-2">10+ Fragmented Tools</h3>
-              <p className="text-sm text-gray-600">Organizers juggle spreadsheets, emails, and multiple platforms</p>
-            </div>
-            <div className="bg-white rounded-xl p-6 border border-amber-200">
-              <div className="text-4xl mb-3">💸</div>
-              <h3 className="font-bold text-gray-900 mb-2">Data Silos & Chaos</h3>
-              <p className="text-sm text-gray-600">Information scattered across tools leads to missed opportunities</p>
-            </div>
-            <div className="bg-white rounded-xl p-6 border border-amber-200">
-              <div className="text-4xl mb-3">⏰</div>
-              <h3 className="font-bold text-gray-900 mb-2">Manual Coordination</h3>
-              <p className="text-sm text-gray-600">Hours wasted on vendor management and attendee communication</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Features Grid */}
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="text-center mb-12">
-          <h2 className="text-4xl font-bold text-gray-900 mb-4">Everything You Need, One Platform</h2>
-          <p className="text-xl text-gray-600">AI-powered tools that actually work together</p>
-        </div>
-
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {/* Feature 1 */}
-          <div className="bg-white/80 backdrop-blur-lg rounded-2xl p-6 border border-gray-200 hover:shadow-2xl transition-all hover:scale-105">
-            <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mb-4">
-              <Sparkles className="w-6 h-6 text-blue-600" />
-            </div>
-            <h3 className="text-xl font-bold text-gray-900 mb-2">AI Event Planning</h3>
-            <p className="text-gray-600">GPT-4 powered assistant plans your event in minutes, not days</p>
-          </div>
-
-          {/* Feature 2 */}
-          <div className="bg-white/80 backdrop-blur-lg rounded-2xl p-6 border border-gray-200 hover:shadow-2xl transition-all hover:scale-105">
-            <div className="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center mb-4">
-              <Users className="w-6 h-6 text-emerald-600" />
-            </div>
-            <h3 className="text-xl font-bold text-gray-900 mb-2">People Universe</h3>
-            <p className="text-gray-600">Interactive attendee management with AI-powered networking</p>
-          </div>
-
-          {/* Feature 3 */}
-          <div className="bg-white/80 backdrop-blur-lg rounded-2xl p-6 border border-gray-200 hover:shadow-2xl transition-all hover:scale-105">
-            <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center mb-4">
-              <Building2 className="w-6 h-6 text-purple-600" />
-            </div>
-            <h3 className="text-xl font-bold text-gray-900 mb-2">Vendor Automation</h3>
-            <p className="text-gray-600">Automated coordination, quotes, and payment tracking</p>
-          </div>
-
-          {/* Feature 4 */}
-          <div className="bg-white/80 backdrop-blur-lg rounded-2xl p-6 border border-gray-200 hover:shadow-2xl transition-all hover:scale-105">
-            <div className="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center mb-4">
-              <BarChart3 className="w-6 h-6 text-amber-600" />
-            </div>
-            <h3 className="text-xl font-bold text-gray-900 mb-2">Real-Time Analytics</h3>
-            <p className="text-gray-600">Live dashboards with predictive insights and sponsor ROI</p>
-          </div>
-
-          {/* Feature 5 */}
-          <div className="bg-white/80 backdrop-blur-lg rounded-2xl p-6 border border-gray-200 hover:shadow-2xl transition-all hover:scale-105">
-            <div className="w-12 h-12 bg-cyan-100 rounded-xl flex items-center justify-center mb-4">
-              <MessageSquare className="w-6 h-6 text-cyan-600" />
-            </div>
-            <h3 className="text-xl font-bold text-gray-900 mb-2">Unified Communication</h3>
-            <p className="text-gray-600">All messages, announcements, and updates in one place</p>
-          </div>
-
-          {/* Feature 6 */}
-          <div className="bg-white/80 backdrop-blur-lg rounded-2xl p-6 border border-gray-200 hover:shadow-2xl transition-all hover:scale-105">
-            <div className="w-12 h-12 bg-rose-100 rounded-xl flex items-center justify-center mb-4">
-              <Calendar className="w-6 h-6 text-rose-600" />
-            </div>
-            <h3 className="text-xl font-bold text-gray-900 mb-2">Smart Scheduling</h3>
-            <p className="text-gray-600">AI-optimized timelines that prevent conflicts</p>
-          </div>
-        </div>
-      </div>
-
-      {/* CTA Section */}
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-3xl p-12 text-center shadow-2xl">
-          <h2 className="text-4xl font-bold text-white mb-4">Ready to Transform Your Events?</h2>
-          <p className="text-xl text-blue-100 mb-8">Join thousands of organizers using AI to plan better events</p>
+        {/* CTA Button */}
+        <div className="flex items-center justify-center mb-16">
           <Link 
             href="/auth/signup"
-            className="inline-flex items-center space-x-2 px-8 py-4 bg-white text-blue-600 rounded-xl font-bold text-lg hover:bg-gray-50 transition-all shadow-xl"
+            className="px-16 py-6 bg-gradient-to-r from-blue-600 to-indigo-700 text-white rounded-2xl font-bold text-2xl hover:from-blue-700 hover:to-indigo-800 transition-all shadow-2xl shadow-blue-500/40 flex items-center space-x-3 group relative overflow-hidden"
           >
-            <span>Get Started Free</span>
-            <ArrowRight className="w-5 h-5" />
-          </Link>
-          <p className="text-sm text-blue-200 mt-4">No credit card required • Set up in 2 minutes</p>
+            <span className="relative z-10">Get Started Now</span>
+            <ArrowRight className="w-7 h-7 relative z-10 group-hover:translate-x-2 transition-transform" />
+            <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-10 transition-opacity blur-xl"></div>
+            </Link>
         </div>
-      </div>
+
+        {/* Dashboard Screenshot Preview */}
+        <div className="max-w-6xl mx-auto mt-20">
+          <div className="relative group">
+            {/* Frame/Border with gradient */}
+            <div className="absolute -inset-4 bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-600 rounded-3xl blur-2xl opacity-30 group-hover:opacity-50 transition-opacity"></div>
+            
+            {/* Screenshot Container */}
+            <div className="relative bg-white rounded-2xl shadow-2xl border-8 border-gray-200 overflow-hidden transform group-hover:scale-[1.02] transition-all duration-500">
+              {/* Browser Chrome */}
+              <div className="bg-gray-100 px-4 py-3 flex items-center space-x-2 border-b border-gray-300">
+                <div className="flex space-x-2">
+                  <div className="w-3 h-3 rounded-full bg-red-400"></div>
+                  <div className="w-3 h-3 rounded-full bg-yellow-400"></div>
+                  <div className="w-3 h-3 rounded-full bg-green-400"></div>
+                </div>
+                <div className="flex-1 mx-4">
+                  <div className="bg-white rounded-lg px-4 py-1.5 text-sm text-gray-600 flex items-center space-x-2">
+                    <div className="w-3 h-3 text-gray-400">🔒</div>
+                    <span className="text-xs">eventos.com/dashboard</span>
+                  </div>
+          </div>
+        </div>
+
+              {/* Dashboard Screenshot Placeholder */}
+              <div className="bg-gradient-to-br from-slate-100 to-blue-100 aspect-video flex items-center justify-center relative overflow-hidden">
+                {/* Placeholder for actual screenshot */}
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="text-center p-8">
+                    <div className="w-24 h-24 bg-gray-300/50 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                      <svg className="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+            </div>
+                    <p className="text-gray-500 text-lg font-medium">Dashboard Screenshot</p>
+                    <p className="text-gray-400 text-sm mt-2">Add your dashboard image here</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            </div>
+          
+          <p className="text-center text-gray-500 mt-6 text-lg">
+            Experience the future of event management
+            </p>
+          </div>
+      </section>
+
+      {/* PROBLEM SECTION - Revolutionary Diagonal Layout */}
+      <section className="relative z-10 py-32 overflow-hidden">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8">
+          {/* Section Header */}
+          <div className="text-center mb-20">
+            <div className="inline-flex items-center space-x-2 px-6 py-3 rounded-full bg-red-100 backdrop-blur-xl border border-red-300 mb-8">
+              <AlertCircle className="w-5 h-5 text-red-600 animate-pulse" />
+              <span className="text-red-700 font-semibold">The $2.3 Billion Problem</span>
+            </div>
+            <h2 className="text-6xl md:text-7xl font-black text-gray-900 mb-6">
+              Event Planning is <span className="text-red-600">Broken</span>
+            </h2>
+            <p className="text-2xl text-gray-600 max-w-3xl mx-auto">
+              45% of events fail due to poor coordination. Are you next?
+            </p>
+          </div>
+
+          {/* Innovative Diagonal/Overlapping Cards */}
+          <div className="relative h-[800px] md:h-[600px]">
+            {/* Card 1 - Large, Top Left */}
+            <div 
+              className="absolute top-0 left-0 md:left-[5%] w-full md:w-[45%] h-64 md:h-80 p-8 rounded-[3rem] bg-gradient-to-br from-red-100 to-orange-100 backdrop-blur-2xl border border-red-300 transform hover:scale-105 hover:rotate-1 transition-all duration-500 group cursor-pointer shadow-xl"
+              style={{
+                transform: `translateY(${scrollY * 0.05}px) rotate(-2deg)`
+              }}
+            >
+              <div className="absolute inset-0 bg-gradient-to-r from-red-500 to-orange-500 opacity-0 group-hover:opacity-10 rounded-[3rem] blur-2xl transition-opacity"></div>
+              <div className="relative h-full flex flex-col justify-between">
+                <div className="flex items-start justify-between">
+                  <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-red-500 to-orange-500 flex items-center justify-center shadow-2xl group-hover:scale-110 transition-transform">
+                    <Target className="w-10 h-10 text-white" />
+                  </div>
+                  <div className="text-right">
+                    <div className="text-7xl font-black text-gray-300 group-hover:text-gray-400 transition-colors">01</div>
+                  </div>
+                </div>
+                <div>
+                  <div className="text-8xl font-black bg-gradient-to-r from-red-600 to-orange-600 bg-clip-text text-transparent mb-4">
+                    10+
+                  </div>
+                  <h3 className="text-3xl font-black text-gray-900 mb-2">Tool Overload</h3>
+                  <p className="text-gray-700 text-lg">Switching between platforms kills 20hrs/week</p>
+                </div>
+            </div>
+          </div>
+
+            {/* Card 2 - Medium, Center Right */}
+            <div 
+              className="absolute top-32 md:top-20 right-0 md:right-[8%] w-full md:w-[42%] h-72 md:h-96 p-8 rounded-[3rem] bg-gradient-to-br from-orange-100 to-yellow-100 backdrop-blur-2xl border border-orange-300 transform hover:scale-105 hover:-rotate-1 transition-all duration-500 group cursor-pointer z-10 shadow-xl"
+              style={{
+                transform: `translateY(${scrollY * -0.03}px) rotate(3deg)`
+              }}
+            >
+              <div className="absolute inset-0 bg-gradient-to-r from-orange-500 to-yellow-500 opacity-0 group-hover:opacity-10 rounded-[3rem] blur-2xl transition-opacity"></div>
+              <div className="relative h-full flex flex-col justify-between">
+                <div className="flex items-start justify-between">
+                  <div className="text-left">
+                    <div className="text-7xl font-black text-gray-300 group-hover:text-gray-400 transition-colors">02</div>
+                  </div>
+                  <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-orange-500 to-yellow-500 flex items-center justify-center shadow-2xl group-hover:scale-110 transition-transform">
+                    <AlertCircle className="w-10 h-10 text-white" />
+                  </div>
+                </div>
+                <div>
+                  <div className="text-8xl font-black bg-gradient-to-r from-orange-600 to-yellow-600 bg-clip-text text-transparent mb-4">
+                    65%
+                  </div>
+                  <h3 className="text-3xl font-black text-gray-900 mb-2">Data Chaos</h3>
+                  <p className="text-gray-700 text-lg">Critical info scattered across 10+ platforms</p>
+                </div>
+            </div>
+          </div>
+
+            {/* Card 3 - Large, Bottom Center/Left */}
+            <div 
+              className="absolute bottom-0 left-0 md:left-[15%] w-full md:w-[50%] h-64 md:h-80 p-8 rounded-[3rem] bg-gradient-to-br from-yellow-100 to-amber-100 backdrop-blur-2xl border border-yellow-300 transform hover:scale-105 hover:rotate-2 transition-all duration-500 group cursor-pointer z-20 shadow-xl"
+              style={{
+                transform: `translateY(${scrollY * 0.02}px) rotate(-3deg)`
+              }}
+            >
+              <div className="absolute inset-0 bg-gradient-to-r from-yellow-500 to-amber-500 opacity-0 group-hover:opacity-10 rounded-[3rem] blur-2xl transition-opacity"></div>
+              <div className="relative h-full flex flex-col justify-between">
+                <div className="flex items-start justify-between">
+                  <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-yellow-500 to-amber-500 flex items-center justify-center shadow-2xl group-hover:scale-110 transition-transform">
+                    <Clock className="w-10 h-10 text-white" />
+                  </div>
+                  <div className="text-right">
+                    <div className="text-7xl font-black text-gray-300 group-hover:text-gray-400 transition-colors">03</div>
+                  </div>
+                </div>
+                <div>
+                  <div className="text-8xl font-black bg-gradient-to-r from-yellow-600 to-amber-600 bg-clip-text text-transparent mb-4">
+                    30hrs
+                  </div>
+                  <h3 className="text-3xl font-black text-gray-900 mb-2">Manual Hell</h3>
+                  <p className="text-gray-700 text-lg">Wasted on copy-paste and status updates</p>
+                </div>
+            </div>
+          </div>
+
+            {/* Connecting Lines Animation */}
+            <svg className="absolute inset-0 w-full h-full pointer-events-none opacity-20" style={{ zIndex: 5 }}>
+              <line x1="20%" y1="30%" x2="75%" y2="40%" stroke="url(#gradient1)" strokeWidth="2" strokeDasharray="5,5">
+                <animate attributeName="stroke-dashoffset" from="0" to="10" dur="1s" repeatCount="indefinite" />
+              </line>
+              <line x1="75%" y1="60%" x2="35%" y2="85%" stroke="url(#gradient2)" strokeWidth="2" strokeDasharray="5,5">
+                <animate attributeName="stroke-dashoffset" from="0" to="10" dur="1.5s" repeatCount="indefinite" />
+              </line>
+              <defs>
+                <linearGradient id="gradient1" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stopColor="#ef4444" />
+                  <stop offset="100%" stopColor="#f59e0b" />
+                </linearGradient>
+                <linearGradient id="gradient2" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stopColor="#f59e0b" />
+                  <stop offset="100%" stopColor="#fbbf24" />
+                </linearGradient>
+              </defs>
+              </svg>
+            </div>
+        </div>
+      </section>
+
+      {/* SOLUTION - Bento Grid Style Features */}
+      <section className="relative z-10 py-32">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8">
+          <div className="text-center mb-20">
+            <div className="inline-flex items-center space-x-2 px-6 py-3 rounded-full bg-blue-100 backdrop-blur-xl border border-blue-300 mb-8">
+              <Brain className="w-5 h-5 text-blue-600 animate-pulse" />
+              <span className="text-blue-700 font-semibold">Powered by GPT-4</span>
+            </div>
+            <h2 className="text-6xl md:text-7xl font-black text-gray-900 mb-6">
+              One Platform. <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Infinite Power.</span>
+            </h2>
+            <p className="text-2xl text-gray-600 max-w-3xl mx-auto">
+              Replace your entire event tech stack with AI-powered automation
+            </p>
+          </div>
+
+          {/* Bento Grid Layout */}
+          <div className="grid grid-cols-12 gap-6 auto-rows-fr">
+            {/* Large Feature - Spans 2 columns, 2 rows */}
+            <div className="col-span-12 md:col-span-7 md:row-span-2 group relative p-12 rounded-[3rem] bg-gradient-to-br from-blue-100 to-indigo-100 backdrop-blur-xl border border-blue-300 hover:border-blue-400 transition-all hover:scale-[1.02] cursor-pointer overflow-hidden shadow-xl">
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-indigo-500 opacity-0 group-hover:opacity-10 blur-3xl transition-opacity"></div>
+              <div className="relative z-10 h-full flex flex-col justify-between">
+                <div>
+                  <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center shadow-2xl mb-8 group-hover:scale-110 group-hover:rotate-12 transition-all">
+                    <Sparkles className="w-10 h-10 text-white" />
+                  </div>
+                  <h3 className="text-5xl font-black text-gray-900 mb-4">AI Event Architect</h3>
+                  <p className="text-gray-700 text-xl leading-relaxed mb-6">Plan complete events in 60 seconds. GPT-4 creates schedules, vendors, attendee lists, and timelines automatically.</p>
+                  <div className="flex flex-wrap gap-3">
+                    <span className="px-4 py-2 rounded-full bg-white/80 backdrop-blur-xl border border-blue-200 text-sm font-semibold text-blue-700">Auto-Planning</span>
+                    <span className="px-4 py-2 rounded-full bg-white/80 backdrop-blur-xl border border-blue-200 text-sm font-semibold text-blue-700">Smart Templates</span>
+                    <span className="px-4 py-2 rounded-full bg-white/80 backdrop-blur-xl border border-blue-200 text-sm font-semibold text-blue-700">Budget Optimization</span>
+                  </div>
+                </div>
+                <div className="flex items-center space-x-3 text-blue-700 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <span className="font-bold">Explore AI Architect</span>
+                  <ArrowRight className="w-5 h-5 group-hover:translate-x-2 transition-transform" />
+                </div>
+              </div>
+            </div>
+
+            {/* Medium Feature */}
+            <div className="col-span-12 md:col-span-5 group relative p-8 rounded-[3rem] bg-gradient-to-br from-cyan-100 to-blue-100 backdrop-blur-xl border border-cyan-300 hover:border-cyan-400 transition-all hover:scale-[1.02] cursor-pointer shadow-xl">
+              <div className="w-16 h-16 rounded-3xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center shadow-2xl mb-6 group-hover:scale-110 transition-transform">
+                <Users className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="text-3xl font-black text-gray-900 mb-3">3D People Universe</h3>
+              <p className="text-gray-700 text-lg">Interactive attendee constellation with AI networking</p>
+            </div>
+
+            {/* Medium Feature */}
+            <div className="col-span-12 md:col-span-5 group relative p-8 rounded-[3rem] bg-gradient-to-br from-emerald-100 to-teal-100 backdrop-blur-xl border border-emerald-300 hover:border-emerald-400 transition-all hover:scale-[1.02] cursor-pointer shadow-xl">
+              <div className="w-16 h-16 rounded-3xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-2xl mb-6 group-hover:scale-110 transition-transform">
+                <Building2 className="w-8 h-8 text-white" />
+            </div>
+              <h3 className="text-3xl font-black text-gray-900 mb-3">Vendor Autopilot</h3>
+              <p className="text-gray-700 text-lg">Auto-coordinate suppliers, track payments, manage contracts</p>
+          </div>
+
+            {/* Wide Feature */}
+            <div className="col-span-12 md:col-span-8 group relative p-10 rounded-[3rem] bg-gradient-to-br from-amber-100 to-orange-100 backdrop-blur-xl border border-amber-300 hover:border-amber-400 transition-all hover:scale-[1.02] cursor-pointer shadow-xl">
+              <div className="flex items-start space-x-8">
+                <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center shadow-2xl group-hover:scale-110 transition-transform flex-shrink-0">
+                  <BarChart3 className="w-10 h-10 text-white" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-4xl font-black text-gray-900 mb-4">Predictive Analytics</h3>
+                  <p className="text-gray-700 text-xl leading-relaxed">Know what happens before it does. AI predicts attendance, engagement, and revenue with 94% accuracy.</p>
+                </div>
+            </div>
+          </div>
+
+            {/* Tall Feature */}
+            <div className="col-span-12 md:col-span-4 md:row-span-2 group relative p-8 rounded-[3rem] bg-gradient-to-br from-sky-100 to-blue-100 backdrop-blur-xl border border-sky-300 hover:border-sky-400 transition-all hover:scale-[1.02] cursor-pointer shadow-xl">
+              <div className="h-full flex flex-col justify-between">
+                <div>
+                  <div className="w-16 h-16 rounded-3xl bg-gradient-to-br from-sky-500 to-blue-600 flex items-center justify-center shadow-2xl mb-6 group-hover:scale-110 transition-transform">
+                    <MessageSquare className="w-8 h-8 text-white" />
+                  </div>
+                  <h3 className="text-3xl font-black text-gray-900 mb-4">Unified Comms</h3>
+                  <p className="text-gray-700 text-lg mb-6">All messages, announcements, and updates in one intelligent hub</p>
+                  <div className="space-y-3">
+                    <div className="flex items-center space-x-3 text-gray-700">
+                      <div className="w-2 h-2 rounded-full bg-sky-500"></div>
+                      <span className="text-sm">Email Integration</span>
+                    </div>
+                    <div className="flex items-center space-x-3 text-gray-700">
+                      <div className="w-2 h-2 rounded-full bg-sky-500"></div>
+                      <span className="text-sm">SMS Automation</span>
+                    </div>
+                    <div className="flex items-center space-x-3 text-gray-700">
+                      <div className="w-2 h-2 rounded-full bg-sky-500"></div>
+                      <span className="text-sm">In-App Chat</span>
+                    </div>
+                  </div>
+            </div>
+          </div>
+        </div>
+
+            {/* Square Feature */}
+            <div className="col-span-6 md:col-span-4 group relative p-8 rounded-[3rem] bg-gradient-to-br from-rose-100 to-pink-100 backdrop-blur-xl border border-rose-300 hover:border-rose-400 transition-all hover:scale-[1.02] cursor-pointer shadow-xl">
+              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-rose-500 to-pink-600 flex items-center justify-center shadow-2xl mb-6 group-hover:scale-110 transition-transform">
+                <Calendar className="w-7 h-7 text-white" />
+              </div>
+              <h3 className="text-2xl font-black text-gray-900 mb-2">Smart Scheduling</h3>
+              <p className="text-gray-700">AI-optimized timelines</p>
+            </div>
+
+            {/* Square Feature */}
+            <div className="col-span-6 md:col-span-4 group relative p-8 rounded-[3rem] bg-gradient-to-br from-violet-100 to-purple-100 backdrop-blur-xl border border-violet-300 hover:border-violet-400 transition-all hover:scale-[1.02] cursor-pointer shadow-xl">
+              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center shadow-2xl mb-6 group-hover:scale-110 transition-transform">
+                <Network className="w-7 h-7 text-white" />
+              </div>
+              <h3 className="text-2xl font-black text-gray-900 mb-2">Live Collaboration</h3>
+              <p className="text-gray-700">Real-time team sync</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
 
       {/* Footer */}
-      <footer className="relative z-10 border-t border-gray-200 bg-white/80 backdrop-blur-lg mt-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <footer className="relative z-10 border-t border-gray-200 bg-white/80 backdrop-blur-lg mt-24">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8 py-12">
           <div className="flex flex-col md:flex-row justify-between items-center">
-            <div className="flex items-center space-x-2 mb-4 md:mb-0">
-              <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-lg flex items-center justify-center">
-                <Zap className="w-5 h-5 text-white" />
+            <div className="flex items-center space-x-3 mb-6 md:mb-0">
+              <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-lg flex items-center justify-center">
+                <Zap className="w-6 h-6 text-white" />
               </div>
-              <span className="text-xl font-bold text-gray-900">EventOS</span>
+              <span className="text-2xl font-bold text-gray-900">EventOS</span>
             </div>
-            <div className="text-sm text-gray-600">
-              © 2025 EventOS. AI-Powered Event Management Platform.
+            <div className="text-lg text-gray-600">
+              © 2025 EventOS. All rights reserved.
             </div>
           </div>
         </div>
       </footer>
+
+      {/* Global Styles for animations */}
+      <style jsx global>{`
+        @keyframes gradient-shift {
+          0% { background-position: 0% 50%; }
+          50% { background-position: 100% 50%; }
+          100% { background-position: 0% 50%; }
+        }
+        @keyframes gradient-shift-delay {
+          0% { background-position: 100% 50%; }
+          50% { background-position: 0% 50%; }
+          100% { background-position: 100% 50%; }
+        }
+        .animate-gradient-shift {
+          background-size: 200% 200%;
+          animation: gradient-shift 8s ease infinite;
+        }
+        .animate-gradient-shift-delay {
+          background-size: 200% 200%;
+          animation: gradient-shift-delay 8s ease infinite;
+        }
+        @keyframes blob-animation-1 {
+          0%, 100% { transform: translate(0, 0) scale(1); }
+          33% { transform: translate(30px, -50px) scale(1.1); }
+          66% { transform: translate(-20px, 20px) scale(0.9); }
+        }
+        @keyframes blob-animation-2 {
+          0%, 100% { transform: translate(0, 0) scale(1); }
+          33% { transform: translate(-40px, 10px) scale(0.95); }
+          66% { transform: translate(10px, -30px) scale(1.05); }
+        }
+        @keyframes blob-animation-3 {
+          0%, 100% { transform: translate(0, 0) scale(1); }
+          33% { transform: translate(20px, 40px) scale(1.03); }
+          66% { transform: translate(-50px, -10px) scale(0.97); }
+        }
+        .animate-blob-1 { animation: blob-animation-1 15s infinite alternate; }
+        .animate-blob-2 { animation: blob-animation-2 18s infinite alternate; }
+        .animate-blob-3 { animation: blob-animation-3 12s infinite alternate; }
+
+        @keyframes pulse-slow {
+          0%, 100% { opacity: 0.5; }
+          50% { opacity: 0.8; }
+        }
+        .animate-pulse-slow { animation: pulse-slow 6s infinite ease-in-out; }
+      `}</style>
     </div>
   )
 }
