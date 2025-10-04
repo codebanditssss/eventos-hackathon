@@ -1,7 +1,27 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import Link from 'next/link'
+import dynamic from 'next/dynamic'
+import { 
+  Users, Calendar, Activity, TrendingUp, AlertCircle, 
+  Clock, MapPin, Zap, BarChart3, MessageSquare,
+  Settings, Bell, Search, Plus, Building2, Target,
+  Sparkles, ArrowUpRight, CheckCircle2, XCircle
+} from 'lucide-react'
+
+// Dynamically import 3D component (client-side only)
+const EventUniverse3D = dynamic(() => import('@/components/EventUniverse3D'), {
+  ssr: false,
+  loading: () => (
+    <div className="w-full h-full flex items-center justify-center">
+      <div className="text-center">
+        <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+        <p className="text-blue-600 font-semibold">Loading 3D Universe...</p>
+      </div>
+    </div>
+  )
+})
 
 export default function MissionControlDashboard() {
   const [currentTime, setCurrentTime] = useState(new Date())
@@ -13,10 +33,10 @@ export default function MissionControlDashboard() {
   const events = [
     {
       id: 1,
-      name: "Tech Summit 2024",
+      name: "Tech Summit 2025",
       type: "Conference",
       venue: "San Francisco Convention Center",
-      date: "March 15-17, 2024",
+      date: "Oct 4-6, 2025",
       status: "live",
       attendees: { registered: 1247, checkedIn: 892, vip: 45 },
       vendors: { total: 12, active: 8, pending: 4 },
@@ -25,14 +45,15 @@ export default function MissionControlDashboard() {
       progress: 65,
       urgentTasks: 3,
       notifications: 7,
-      theme: "from-blue-600 to-indigo-700"
+      theme: "from-blue-600 to-indigo-700",
+      daysUntil: 0 // Today
     },
     {
       id: 2,
       name: "Startup Pitch Night",
       type: "Networking",
       venue: "Innovation Hub Downtown",
-      date: "March 20, 2024",
+      date: "Oct 15, 2025",
       status: "upcoming",
       attendees: { registered: 456, checkedIn: 0, vip: 12 },
       vendors: { total: 8, active: 6, pending: 2 },
@@ -41,14 +62,15 @@ export default function MissionControlDashboard() {
       progress: 85,
       urgentTasks: 1,
       notifications: 3,
-      theme: "from-emerald-600 to-teal-700"
+      theme: "from-emerald-600 to-teal-700",
+      daysUntil: 11
     },
     {
       id: 3,
       name: "AI Innovation Workshop",
       type: "Workshop",
       venue: "Tech Campus Building A",
-      date: "April 2-4, 2024",
+      date: "Nov 2-4, 2025",
       status: "planning",
       attendees: { registered: 234, checkedIn: 0, vip: 8 },
       vendors: { total: 15, active: 5, pending: 10 },
@@ -57,7 +79,8 @@ export default function MissionControlDashboard() {
       progress: 40,
       urgentTasks: 8,
       notifications: 12,
-      theme: "from-purple-600 to-violet-700"
+      theme: "from-purple-600 to-violet-700",
+      daysUntil: 29
     }
   ]
 
@@ -87,92 +110,81 @@ export default function MissionControlDashboard() {
         }}></div>
       </div>
 
-      {/* EventOS Mission Control Header */}
-      <nav className="absolute top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-lg border-b border-blue-100 shadow-lg shadow-blue-500/10">
-        <div className="max-w-7xl mx-auto px-6 py-4">
+      {/* Simplified Professional Header */}
+      <nav className="absolute top-0 left-0 right-0 z-50 bg-white border-b border-gray-200 shadow-sm">
+        <div className="max-w-full mx-auto px-6 py-3">
           <div className="flex justify-between items-center">
-            <div className="flex items-center space-x-6">
-              <Link href="/" className="flex items-center space-x-3">
-                <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-blue-700 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/25">
-                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            {/* Left: Brand + Event Name */}
+            <div className="flex items-center space-x-4">
+              <Link href="/" className="flex items-center space-x-2">
+                <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+                  <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                   </svg>
                 </div>
-                <div>
-                  <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">EventOS</span>
-                  <div className="text-xs text-blue-600 font-medium -mt-1">AI Event Platform</div>
-                </div>
+                <span className="text-xl font-bold text-gray-900">EventOS</span>
               </Link>
-              <div className="hidden md:flex items-center space-x-2 bg-blue-50 px-3 py-1 rounded-lg">
-                <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
-                <span className="text-blue-700 text-sm font-medium">Mission Control</span>
+              <div className="h-6 w-px bg-gray-300"></div>
+              <div className="flex items-center space-x-3">
+                <h1 className="text-lg font-semibold text-gray-900">{currentEvent.name}</h1>
+                  <span className={`flex items-center space-x-1 px-2 py-1 text-xs font-bold rounded-full ${
+                    currentEvent.status === 'live' ? 'bg-emerald-100 text-emerald-700' :
+                    currentEvent.status === 'upcoming' ? 'bg-blue-100 text-blue-700' :
+                    'bg-amber-100 text-amber-700'
+                  }`}>
+                    {currentEvent.status === 'live' && <Activity className="w-3 h-3" />}
+                    {currentEvent.status === 'upcoming' && <Clock className="w-3 h-3" />}
+                    {currentEvent.status === 'planning' && <Settings className="w-3 h-3" />}
+                    <span>{currentEvent.status.toUpperCase()}</span>
+                  </span>
               </div>
             </div>
             
+            {/* Right: Key Metrics + Actions */}
             <div className="flex items-center space-x-6">
-              {/* Live Event Stats */}
-              <div className="hidden lg:flex items-center space-x-4 bg-white/60 backdrop-blur-sm border border-gray-200/50 rounded-xl px-4 py-2">
-                <div className="flex items-center space-x-2">
-                  <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
-                  <span className="text-emerald-700 text-sm font-semibold">{events.filter(e => e.status === 'live').length} Live</span>
+              {/* Compact Stats */}
+              <div className="flex items-center space-x-4 text-sm">
+                <div className="flex items-center space-x-1.5">
+                  <Users className="w-4 h-4 text-gray-500" />
+                  <span className="font-semibold text-gray-900">{currentEvent.attendees.checkedIn}</span>
+                  <span className="text-gray-500">/{currentEvent.attendees.registered}</span>
                 </div>
-                <div className="text-gray-300">|</div>
-                <div className="flex items-center space-x-2">
-                  <div className="w-2 h-2 bg-amber-500 rounded-full animate-pulse"></div>
-                  <span className="text-amber-700 text-sm font-semibold">{currentEvent.urgentTasks} Urgent</span>
+                <div className="flex items-center space-x-1.5">
+                  <Calendar className="w-4 h-4 text-gray-500" />
+                  <span className="font-semibold text-gray-900">{currentEvent.sessions.live}</span>
+                  <span className="text-gray-500">live</span>
                 </div>
-                <div className="text-gray-300">|</div>
-                <div className="text-blue-600 font-mono text-xs font-medium">{currentTime.toLocaleTimeString()}</div>
-              </div>
-              
-              {/* Replace 10+ Tools Badge */}
-              <div className="hidden md:flex items-center space-x-2 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white px-4 py-2 rounded-xl shadow-lg shadow-emerald-500/25">
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <span className="text-sm font-bold">Replaces 10+ Tools</span>
-              </div>
-              
-              {/* AI Copilot Toggle */}
-              <button 
-                onClick={() => setAiCopilotOpen(!aiCopilotOpen)}
-                className={`flex items-center space-x-3 px-4 py-2 rounded-xl transition-all duration-200 shadow-lg ${
-                  aiCopilotOpen 
-                    ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-blue-500/25' 
-                    : 'bg-white/80 text-blue-700 hover:bg-blue-50 border border-blue-200 shadow-blue-500/10'
-                }`}
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-                </svg>
-                <div className="hidden md:block">
-                  <div className="text-sm font-bold">AI Copilot</div>
-                  <div className="text-xs opacity-90">Planning Assistant</div>
-                </div>
-                {currentEvent.notifications > 0 && (
-                  <div className="w-3 h-3 bg-red-500 rounded-full animate-ping flex items-center justify-center">
-                    <div className="text-xs text-white font-bold">{currentEvent.notifications}</div>
+                {currentEvent.urgentTasks > 0 && (
+                  <div className="flex items-center space-x-1.5 text-amber-600">
+                    <AlertCircle className="w-4 h-4" />
+                    <span className="font-semibold">{currentEvent.urgentTasks}</span>
                   </div>
                 )}
+              </div>
+              
+              {/* Quick Actions */}
+              <button 
+                onClick={() => setAiCopilotOpen(!aiCopilotOpen)}
+                className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                  aiCopilotOpen 
+                    ? 'bg-blue-600 text-white' 
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+              >
+                <Sparkles className="w-4 h-4" />
+                <span>AI Copilot</span>
               </button>
               
-              {/* Profile */}
-              <button className="flex items-center space-x-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 rounded-xl px-4 py-2 text-white transition-all duration-200 shadow-lg shadow-blue-500/25">
-                <div className="w-9 h-9 bg-white/20 rounded-lg flex items-center justify-center">
-                  <span className="text-sm font-bold">KD</span>
-            </div>
-                <div className="hidden md:block text-left">
-                  <div className="text-sm font-bold">Khushi Diwan</div>
-                  <div className="text-xs opacity-90">Event Organizer</div>
-                  </div>
-                </button>
+              <button className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white text-sm font-bold hover:bg-blue-700 transition-colors">
+                KD
+              </button>
             </div>
           </div>
         </div>
       </nav>
 
       {/* Main Mission Control Interface */}
-      <div className="pt-20 h-screen flex">
+      <div className="pt-14 h-screen flex">
         
         {/* Enhanced AI Copilot Sidebar */}
         {aiCopilotOpen && (
@@ -282,7 +294,7 @@ export default function MissionControlDashboard() {
                 </button>
               </div>
               <p className="text-xs text-blue-600 mt-2 font-medium">
-                💬 Powered by EventOS AI • Trained on 10,000+ successful events
+                <MessageSquare className="w-3 h-3 inline" /> Powered by EventOS AI • Trained on 10,000+ successful events
               </p>
                         </div>
                       </div>
@@ -400,135 +412,188 @@ export default function MissionControlDashboard() {
                 </div>
               </div>
 
-            {/* Center Column - Main Event Sphere */}
-            <div className="col-span-6 flex items-center justify-center">
-              <div className="relative">
-                
-                {/* Enhanced Event Sphere */}
-                <div 
-                  className={`w-72 h-72 bg-gradient-to-br ${currentEvent.theme} rounded-full flex items-center justify-center shadow-2xl cursor-pointer transition-all duration-700 hover:scale-105 relative overflow-hidden`}
-                  onClick={() => setSelectedEvent((prev) => (prev + 1) % events.length)}
-                >
-                  {/* Sphere Content */}
-                  <div className="text-center text-white relative z-10 p-6">
-                    <h2 className="text-2xl font-bold mb-2">{currentEvent.name}</h2>
-                    <p className="text-sm opacity-90 mb-1">{currentEvent.type}</p>
-                    <p className="text-xs opacity-75 mb-4">{currentEvent.venue}</p>
-                    <p className="text-sm opacity-90 mb-6">{currentEvent.date}</p>
-                    
-                    {/* Live Status Badge */}
-                    <div className={`inline-flex items-center space-x-2 px-4 py-2 rounded-full mb-6 ${
-                      currentEvent.status === 'live' ? 'bg-emerald-500/20 border border-emerald-300' :
-                      currentEvent.status === 'upcoming' ? 'bg-blue-500/20 border border-blue-300' : 
-                      'bg-amber-500/20 border border-amber-300'
-                    }`}>
-                      <div className={`w-2 h-2 rounded-full animate-pulse ${
-                        currentEvent.status === 'live' ? 'bg-emerald-300' :
-                        currentEvent.status === 'upcoming' ? 'bg-blue-300' : 'bg-amber-300'
-                      }`}></div>
-                      <span className="text-sm font-bold uppercase tracking-wide">
-                        {currentEvent.status}
-                      </span>
-                    </div>
-
-                    {/* Key Metrics Grid */}
-                    <div className="grid grid-cols-2 gap-4 text-center">
-                      <div>
-                        <div className="text-xl font-bold">{currentEvent.attendees.registered}</div>
-                        <div className="text-xs opacity-75">Registered</div>
-                      </div>
-                      <div>
-                        <div className="text-xl font-bold">{currentEvent.progress}%</div>
-                        <div className="text-xs opacity-75">Complete</div>
-                      </div>
-                      </div>
-                    </div>
-                  
-                  {/* Animated Background Effects */}
-                  <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-black/20"></div>
-                  <div className="absolute top-4 right-4 w-8 h-8 bg-white/20 rounded-full animate-pulse"></div>
-                  <div className="absolute bottom-6 left-6 w-4 h-4 bg-white/15 rounded-full animate-pulse delay-1000"></div>
+            {/* Center Column - Event Command Center */}
+            <div className="col-span-6 space-y-4">
+              
+              {/* Top Metrics Row */}
+              <div className="grid grid-cols-4 gap-4">
+                <div className="bg-white rounded-xl p-4 border border-gray-200 shadow-sm">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm text-gray-600">Attendance</span>
+                    <span className="text-emerald-600">↑ 12%</span>
+                  </div>
+                  <div className="text-3xl font-bold text-gray-900">{currentEvent.attendees.checkedIn}</div>
+                  <div className="text-sm text-gray-500">of {currentEvent.attendees.registered} registered</div>
+                  <div className="mt-2 w-full bg-gray-200 rounded-full h-2">
+                    <div className="bg-emerald-500 h-2 rounded-full" style={{width: `${(currentEvent.attendees.checkedIn/currentEvent.attendees.registered)*100}%`}}></div>
+                  </div>
                 </div>
 
-                {/* Enhanced Orbital Rings with Labels */}
-                <div className="absolute inset-0 pointer-events-none">
-                  
-                  {/* Attendee Ring */}
-                  <div 
-                    className="absolute border-2 border-emerald-400/40 rounded-full animate-spin"
-                    style={{
-                      width: '120%', height: '120%', left: '-10%', top: '-10%',
-                      animationDuration: '20s'
-                    }}
-                  >
-                    <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-emerald-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg">
-                      {currentEvent.attendees.registered} Attendees
-                    </div>
-                    <div 
-                      className="absolute w-4 h-4 bg-emerald-500 rounded-full shadow-lg border-2 border-white"
-                      style={{
-                        top: '-2px', left: '50%', transform: 'translateX(-50%)'
-                      }}
-                    ></div>
+                <div className="bg-white rounded-xl p-4 border border-gray-200 shadow-sm">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm text-gray-600">Live Sessions</span>
+                    <span className="text-blue-600">● Active</span>
                   </div>
-
-                  {/* Vendor Ring */}
-                  <div 
-                    className="absolute border-2 border-blue-400/40 rounded-full animate-spin"
-                    style={{
-                      width: '140%', height: '140%', left: '-20%', top: '-20%',
-                      animationDuration: '30s', animationDirection: 'reverse'
-                    }}
-                  >
-                    <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-blue-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg">
-                      {currentEvent.vendors.total} Vendors
-                    </div>
-                    <div 
-                      className="absolute w-3 h-3 bg-blue-500 rounded-full shadow-lg border-2 border-white"
-                      style={{
-                        top: '-1.5px', left: '50%', transform: 'translateX(-50%)'
-                      }}
-                    ></div>
+                  <div className="text-3xl font-bold text-gray-900">{currentEvent.sessions.live}</div>
+                  <div className="text-sm text-gray-500">{currentEvent.sessions.upcoming} upcoming</div>
+                  <div className="mt-2 flex space-x-1">
+                    {[...Array(currentEvent.sessions.live)].map((_, i) => (
+                      <div key={i} className="flex-1 bg-blue-500 rounded-full h-2"></div>
+                    ))}
+                    {[...Array(3 - currentEvent.sessions.live)].map((_, i) => (
+                      <div key={i} className="flex-1 bg-gray-200 rounded-full h-2"></div>
+                    ))}
                   </div>
+                </div>
 
-                  {/* Sponsor Ring */}
-                  <div 
-                    className="absolute border-2 border-purple-400/40 rounded-full animate-spin"
-                    style={{
-                      width: '160%', height: '160%', left: '-30%', top: '-30%',
-                      animationDuration: '40s'
-                    }}
-                  >
-                    <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-purple-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg">
-                      {currentEvent.sponsors.total} Sponsors
+                <div className="bg-white rounded-xl p-4 border border-gray-200 shadow-sm">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm text-gray-600">Engagement</span>
+                    <span className="text-purple-600">87%</span>
+                  </div>
+                  <div className="text-3xl font-bold text-gray-900">High</div>
+                  <div className="text-sm text-gray-500">Above average</div>
+                  <div className="mt-2 flex space-x-1">
+                    {[1,2,3,4].map((i) => (
+                      <div key={i} className={`flex-1 h-6 rounded ${i <= 3 ? 'bg-purple-500' : 'bg-gray-200'}`}></div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="bg-white rounded-xl p-4 border border-gray-200 shadow-sm">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm text-gray-600">Progress</span>
+                    <span className="text-amber-600">{currentEvent.progress}%</span>
+                  </div>
+                  <div className="text-3xl font-bold text-gray-900">On Track</div>
+                  <div className="text-sm text-gray-500">Event milestone</div>
+                  <div className="mt-2 relative w-12 h-12">
+                    <svg className="transform -rotate-90 w-12 h-12">
+                      <circle cx="24" cy="24" r="20" stroke="#E5E7EB" strokeWidth="4" fill="none" />
+                      <circle cx="24" cy="24" r="20" stroke="#F59E0B" strokeWidth="4" fill="none"
+                        strokeDasharray={`${2 * Math.PI * 20}`}
+                        strokeDashoffset={`${2 * Math.PI * 20 * (1 - currentEvent.progress/100)}`} />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+
+              {/* Main Charts Section */}
+              <div className="grid grid-cols-2 gap-4">
+                {/* Session Engagement Chart */}
+                <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Session Engagement (Live)</h3>
+                  <div className="space-y-3">
+                    <div>
+                      <div className="flex justify-between text-sm mb-1">
+                        <span className="text-gray-700 font-medium">AI in Product Development</span>
+                        <span className="text-blue-600 font-bold">98%</span>
                       </div>
-                    <div 
-                      className="absolute w-2 h-2 bg-purple-500 rounded-full shadow-lg border border-white"
-                      style={{
-                        top: '-1px', left: '50%', transform: 'translateX(-50%)'
-                      }}
-                    ></div>
+                      <div className="w-full bg-gray-200 rounded-full h-3">
+                        <div className="bg-gradient-to-r from-blue-500 to-blue-600 h-3 rounded-full" style={{width: '98%'}}></div>
                       </div>
+                      <div className="text-xs text-gray-500 mt-1">456 attendees • Main Hall</div>
                     </div>
-
-                {/* Event Selector */}
-                <div className="absolute -bottom-12 left-1/2 transform -translate-x-1/2 flex space-x-3">
-                  {events.map((event, index) => (
-                    <button
-                      key={event.id}
-                      onClick={() => setSelectedEvent(index)}
-                      className={`w-4 h-4 rounded-full transition-all duration-300 border-2 ${
-                        selectedEvent === index 
-                          ? `bg-gradient-to-r ${event.theme} border-white shadow-lg scale-125` 
-                          : 'bg-white/60 border-gray-300 hover:bg-white/80'
-                      }`}
-                    >
-                      <span className="sr-only">Select {event.name}</span>
-                    </button>
-                  ))}
+                    <div>
+                      <div className="flex justify-between text-sm mb-1">
+                        <span className="text-gray-700 font-medium">ML Workshop</span>
+                        <span className="text-emerald-600 font-bold">87%</span>
                       </div>
+                      <div className="w-full bg-gray-200 rounded-full h-3">
+                        <div className="bg-gradient-to-r from-emerald-500 to-emerald-600 h-3 rounded-full" style={{width: '87%'}}></div>
+                      </div>
+                      <div className="text-xs text-gray-500 mt-1">234 attendees • Room A</div>
+                    </div>
+                    <div>
+                      <div className="flex justify-between text-sm mb-1">
+                        <span className="text-gray-700 font-medium">Keynote Q&A</span>
+                        <span className="text-purple-600 font-bold">92%</span>
+                      </div>
+                      <div className="w-full bg-gray-200 rounded-full h-3">
+                        <div className="bg-gradient-to-r from-purple-500 to-purple-600 h-3 rounded-full" style={{width: '92%'}}></div>
+                      </div>
+                      <div className="text-xs text-gray-500 mt-1">892 attendees • Main Stage</div>
                     </div>
                   </div>
+                </div>
+
+                {/* Sponsor Impressions */}
+                <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Sponsor Impressions (Today)</h3>
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-10 h-10 bg-gradient-to-r from-amber-500 to-amber-600 rounded-lg flex items-center justify-center text-white font-bold">
+                          TC
+                        </div>
+                        <div>
+                          <div className="font-semibold text-gray-900">TechCorp</div>
+                          <div className="text-xs text-gray-500">Platinum Sponsor</div>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-lg font-bold text-gray-900">8,234</div>
+                        <div className="text-xs text-emerald-600">↑ 23%</div>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-10 h-10 bg-gradient-to-r from-yellow-500 to-yellow-600 rounded-lg flex items-center justify-center text-white font-bold">
+                          IL
+                        </div>
+                        <div>
+                          <div className="font-semibold text-gray-900">InnovateLabs</div>
+                          <div className="text-xs text-gray-500">Gold Sponsor</div>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-lg font-bold text-gray-900">5,127</div>
+                        <div className="text-xs text-emerald-600">↑ 15%</div>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-10 h-10 bg-gradient-to-r from-gray-400 to-gray-500 rounded-lg flex items-center justify-center text-white font-bold">
+                          SH
+                        </div>
+                        <div>
+                          <div className="font-semibold text-gray-900">StartupHub</div>
+                          <div className="text-xs text-gray-500">Silver Sponsor</div>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-lg font-bold text-gray-900">2,943</div>
+                        <div className="text-xs text-emerald-600">↑ 8%</div>
+                      </div>
+                    </div>
+
+                    <div className="pt-2 border-t border-gray-200">
+                      <div className="text-sm text-gray-600">Total Impressions</div>
+                      <div className="text-2xl font-bold text-gray-900">16,304</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Event Selector */}
+              <div className="flex items-center justify-center space-x-2">
+                {events.map((event, index) => (
+                  <button
+                    key={event.id}
+                    onClick={() => setSelectedEvent(index)}
+                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                      selectedEvent === index 
+                        ? 'bg-blue-600 text-white shadow-lg' 
+                        : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-200'
+                    }`}
+                  >
+                    {event.name}
+                  </button>
+                ))}
+              </div>
+            </div>
 
             {/* Right Column - Live Updates & Actions */}
             <div className="col-span-3 space-y-6">
@@ -591,23 +656,23 @@ export default function MissionControlDashboard() {
                 <div className="space-y-3 text-sm">
                   <div className="flex items-start space-x-3">
                     <div className="w-2 h-2 bg-emerald-500 rounded-full mt-2 animate-pulse"></div>
-                    <div>
+                      <div>
                       <p className="font-semibold text-gray-800">New Registration</p>
                       <p className="text-gray-600 text-xs">Sarah Chen registered for VIP package</p>
                       <p className="text-gray-400 text-xs">2 min ago</p>
                     </div>
-                  </div>
+                      </div>
                   <div className="flex items-start space-x-3">
                     <div className="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
                     <div>
                       <p className="font-semibold text-gray-800">Vendor Update</p>
                       <p className="text-gray-600 text-xs">Catering confirmed arrival time</p>
                       <p className="text-gray-400 text-xs">5 min ago</p>
+                      </div>
                     </div>
-                  </div>
                   <div className="flex items-start space-x-3">
                     <div className="w-2 h-2 bg-purple-500 rounded-full mt-2"></div>
-                    <div>
+                      <div>
                       <p className="font-semibold text-gray-800">Sponsor Engagement</p>
                       <p className="text-gray-600 text-xs">TechCorp booth had 47 visitors</p>
                       <p className="text-gray-400 text-xs">12 min ago</p>
